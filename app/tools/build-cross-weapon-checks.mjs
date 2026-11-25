@@ -1,0 +1,18 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Cross-weapon sample requires playtest');
+const {buildOptions}=await import('./build.mjs');
+const config=buildConfig(),root=path.resolve(process.env.CROSS_WEAPON_CHECK_DIR||'../.local/checks/cross-weapon-growth-20261025');
+const preview=path.join(root,'preview'),fixture=path.join(root,'fixture');
+for(const folder of [preview,fixture]){mkdirSync(folder,{recursive:true});cpSync(config.dist,folder,{recursive:true});}
+await build({...buildOptions,entryPoints:['tests/fixtures/cross-weapon-checks.ts'],outfile:path.join(fixture,'assets/cross-weapon-checks.js')});
+writeFileSync(path.join(fixture,'cross-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/cross-weapon-checks.js"></script></head><body style="margin:0"><div id="stage" style="width:390px;height:844px"></div></body></html>');
+await build({...buildOptions,entryPoints:['tests/fixtures/cross-weapon-sample.ts'],outfile:path.join(fixture,'assets/cross-weapon-sample.js')});
+writeFileSync(path.join(fixture,'cross-sample.html'),readFileSync(path.join(fixture,'index.html'),'utf8').replace('./assets/main.js','./assets/cross-weapon-sample.js'));
+// Review controls and test hooks stay in fixture; normal preview is uninstrumented.
+writeFileSync(path.join(preview,'comparison.html'),`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>跨武器构筑小样</title><style>body{max-width:720px;margin:0 auto;padding:24px;background:#f1ebd8;color:#513d2c;font:16px/1.65 sans-serif}h1{font-size:26px}form,section{padding:20px;margin:16px 0;border:1px solid #c8b38f;border-radius:18px;background:#fff9e9}label{display:block;margin:12px 0}select,button,a.action{box-sizing:border-box;min-height:44px;padding:10px;border:1px solid #b69a6d;border-radius:10px;background:#fff0bc;color:inherit;font-size:16px}button{cursor:pointer}small{display:block}a{color:#476752}</style></head><body><h1>三武器 × 同一套构筑</h1><p>本轮迁移现有20项奖励。不同武器保留原生特性，独立技能以相同基数成长。</p><form action="./index.html" method="get"><label>出战配对 <select name="cat"><option value="CAT01">橘团＋铃铛弹射器</option><option value="CAT02">雪团＋小鱼干</option><option value="CAT03">墨团＋鱼骨</option></select></label><label>经验节奏 <select name="xp"><option value="28">推荐：十分钟参考28次升级</option><option value="20">对照：参考20次</option><option value="36">压力：参考36次</option></select></label><label>属性收益 <select name="attributes"><option value="A">A：保留现有增幅</option><option value="B">B：较小增幅对照</option></select></label><button type="submit">从零开始十分钟试玩</button><small>按886经验估算，实际次数取决于拾取；精英奖励在2:30／5:00登场后实际击败领取，Boss7:30出现，10:00上限。</small></form><section><h2>快速看不同打法</h2><p>快速页会预置5次投入，可立即对照多重投射、贯穿、装填爆发与三级环铃。生命、敌人与时间照常运行，不发经验或精英奖励。</p><a class="action" href="http://127.0.0.1:8912/cross-sample.html?cat=CAT01">橘团小样</a> <a class="action" href="http://127.0.0.1:8912/cross-sample.html?cat=CAT02">雪团小样</a> <a class="action" href="http://127.0.0.1:8912/cross-sample.html?cat=CAT03">墨团小样</a><p><small>雪团与墨团沿用已有静态战斗形象；橘团保留已确认的30u造型与动作。</small></p></section><p><a href="http://127.0.0.1:8898/?revision=ten-minute-v12">旧版十分钟对照</a> · 本轮仅本地预览。</p></body></html>`);
+// Same landing page on fixture allows navigation back from quick samples.
+cpSync(path.join(preview,'comparison.html'),path.join(fixture,'comparison.html'));
+console.log(JSON.stringify({preview,fixture,scope:'LOCAL_SAMPLE_NOT_A_RELEASE'}));

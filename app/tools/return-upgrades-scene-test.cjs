@@ -1,0 +1,8 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const root=path.resolve(process.env.RETURN_CHECK_DIR||'../.local/checks/hot-mirror-pilot-20261102'),port=process.env.RETURN_SCENE_PORT||'8966';let browser,server;const errors=[];
+(async()=>{try{server=spawn(process.execPath,[path.join(__dirname,'serve.mjs')],{cwd:path.resolve(__dirname,'..'),env:{...process.env,APP_DIST:path.join(root,'scene-dist'),PORT:port},windowsHide:true,stdio:['ignore','pipe','pipe']});await new Promise((r,j)=>{server.stdout.once('data',r);server.once('error',j);server.once('exit',c=>j(Error('server '+c)));});
+ browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage();page.on('pageerror',e=>errors.push(String(e)));await page.goto('http://127.0.0.1:'+port+'/return-upgrades-checks.html');await page.waitForFunction(()=>window.returnUpgradesChecksReady||window.returnUpgradesChecksBootError);
+ const result=await page.evaluate(()=>window.returnUpgradesChecksBootError?{status:'FAIL',error:window.returnUpgradesChecksBootError}:window.runReturnUpgradesChecks());
+ fs.writeFileSync(path.join(root,process.env.RETURN_REPORT||'scene.json'),JSON.stringify({browser:browser.version(),artifact:JSON.parse(fs.readFileSync(path.join(root,'scene-build.json'),'utf8')),...result,pageErrors:errors},null,2)+'\n');assert.equal(result.status,'PASS',result.error);assert.deepEqual(errors,[]);console.log('PASS return upgrades actual Scene '+result.checks.length);
+}catch(e){console.error(e);process.exitCode=1;}finally{await browser?.close();server?.kill();}})();

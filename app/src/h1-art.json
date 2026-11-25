@@ -1,0 +1,341 @@
+{
+  "visualRevision": "h1-orange-c-and-held-weapons-v1",
+  "frames": {
+    "h1-tree-left": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      }
+    },
+    "h1-tree-right": {
+      "frame": {
+        "x": 96,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      }
+    },
+    "h1-ground": {
+      "frame": {
+        "x": 192,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 64
+      }
+    },
+    "h1-weapon-W04": {
+      "frame": {
+        "x": 192,
+        "y": 64,
+        "w": 64,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 64
+      }
+    },
+    "h1-wall": {
+      "frame": {
+        "x": 0,
+        "y": 96,
+        "w": 128,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 32
+      }
+    },
+    "h1-weapon-W02": {
+      "frame": {
+        "x": 128,
+        "y": 96,
+        "w": 64,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 64
+      }
+    },
+    "h1-bed": {
+      "frame": {
+        "x": 0,
+        "y": 128,
+        "w": 128,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 64
+      }
+    },
+    "h1-foliage": {
+      "frame": {
+        "x": 192,
+        "y": 128,
+        "w": 64,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 64
+      }
+    },
+    "h1-ground-detail": {
+      "frame": {
+        "x": 128,
+        "y": 160,
+        "w": 64,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 32
+      }
+    },
+    "h1-hedge": {
+      "frame": {
+        "x": 0,
+        "y": 192,
+        "w": 128,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 128,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 64
+      }
+    },
+    "h1-grip-CAT02": {
+      "frame": {
+        "x": 128,
+        "y": 192,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      }
+    },
+    "h1-grip-CAT03": {
+      "frame": {
+        "x": 160,
+        "y": 192,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      }
+    },
+    "h1-stone": {
+      "frame": {
+        "x": 128,
+        "y": 224,
+        "w": 64,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 32
+      }
+    },
+    "h1-flower": {
+      "frame": {
+        "x": 192,
+        "y": 192,
+        "w": 64,
+        "h": 64
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 64,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 64,
+        "h": 64
+      }
+    }
+  },
+  "meta": {
+    "image": "cat.png",
+    "size": {
+      "w": 256,
+      "h": 256
+    },
+    "scale": "1"
+  },
+  "actors": {
+    "CAT02": {
+      "weaponId": "W04",
+      "weaponFrame": "h1-weapon-W04",
+      "gripFrame": "h1-grip-CAT02",
+      "grip": [
+        -0.26518474215842636,
+        0.006113769271664034
+      ],
+      "weaponOrigin": [
+        0.5627374169040836,
+        0.5976377018043684
+      ],
+      "weaponSizeRatio": 0.3678742310321258,
+      "gripSizeRatio": 0.1467304625199362,
+      "releaseAngle": -2.286998211573762,
+      "headFrame": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 178
+      },
+      "source": "UI body and foreground head share the same decoded384px image; no second face PNG or complete walking animation"
+    },
+    "CAT03": {
+      "weaponId": "W02",
+      "weaponFrame": "h1-weapon-W02",
+      "gripFrame": "h1-grip-CAT03",
+      "grip": [
+        -0.22496087636932707,
+        -0.0292449139280125
+      ],
+      "weaponOrigin": [
+        0.818868118323747,
+        0.7167728019720625
+      ],
+      "weaponSizeRatio": 0.3233180564870705,
+      "gripSizeRatio": 0.14397496087636932,
+      "releaseAngle": -2.5192897824025855,
+      "headFrame": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 208
+      },
+      "source": "UI body and foreground head share the same decoded384px image; no second face PNG or complete walking animation"
+    }
+  }
+}

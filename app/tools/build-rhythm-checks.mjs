@@ -1,0 +1,14 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Rhythm fixture requires playtest');
+const {buildOptions}=await import('./build.mjs');
+const root=path.resolve(process.env.RHYTHM_CHECK_DIR||'../.local/checks/g4-2a-rhythm-20261028'),fixture=path.join(root,'scene-dist');
+mkdirSync(fixture,{recursive:true});cpSync(buildConfig().dist,fixture,{recursive:true});
+for(const name of ['rhythm-checks','projectile-traits-checks'])await build({...buildOptions,entryPoints:['tests/fixtures/'+name+'.ts'],outfile:path.join(fixture,'assets/'+name+'.js')});
+for(const [page,entry] of [['rhythm','rhythm-checks'],['traits','projectile-traits-checks']])writeFileSync(path.join(fixture,page+'-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/'+entry+'.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+const sha=file=>createHash('sha256').update(readFileSync(file)).digest('hex');
+writeFileSync(path.join(root,'rhythm-build.json'),JSON.stringify({scope:'LOCAL_ACTUAL_SCENE_NOT_RELEASE',atUtc:new Date().toISOString(),fixture,normalMainSHA256:sha(path.join(fixture,'assets/main.js')),checksSHA256:sha(path.join(fixture,'assets/rhythm-checks.js')),newRuntimeImages:0},null,2));
+console.log(fixture);

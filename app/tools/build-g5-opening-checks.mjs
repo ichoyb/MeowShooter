@@ -1,0 +1,14 @@
+import {build} from 'esbuild';
+import {mkdirSync,cpSync,writeFileSync,readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('G5 checks require playtest');
+const {buildOptions}=await import('./build.mjs'),config=buildConfig();
+const out=path.resolve(process.env.G5_SCENE_DIR||'../.local/checks/g5-opening-20261105/scene'),dist=path.join(out,'scene-dist');
+mkdirSync(dist,{recursive:true});cpSync(config.dist,dist,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/g5-opening-checks.ts'],outfile:path.join(dist,'assets/g5-opening-checks.js')});
+writeFileSync(path.join(dist,'g5-opening-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/g5-opening-checks.js"></script></head><body style="margin:0"><div id="stage" style="width:390px;height:844px;position:relative"></div></body></html>');
+const sha=f=>createHash('sha256').update(readFileSync(f)).digest('hex');
+writeFileSync(path.join(out,'build.json'),JSON.stringify({dist,mainSHA256:sha(path.join(dist,'assets/main.js')),checksSHA256:sha(path.join(dist,'assets/g5-opening-checks.js')),sourceHashes:Object.fromEntries(['src/battle.ts','src/onboarding.ts','src/level-config.ts','src/arena-layout.ts','tests/fixtures/g5-opening-checks.ts'].map(f=>[f,sha(f)]))},null,2)+'\n');
+console.log('Built G5 controlled opening checks: '+dist);

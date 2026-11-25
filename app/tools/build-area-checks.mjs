@@ -1,0 +1,10 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Area checks require playtest');
+const {buildOptions}=await import('./build.mjs'),root=path.resolve(process.env.AREA_CHECK_DIR||'../.local/checks/area-recovery-20261104'),fixture=path.join(root,'scene-dist');mkdirSync(fixture,{recursive:true});cpSync(buildConfig().dist,fixture,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/area-checks.ts'],outfile:path.join(fixture,'assets/area-checks.js')});
+writeFileSync(path.join(fixture,'area-checks.html'),'<!doctype html><html><head><meta charset="utf-8"><script defer src="./assets/area-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');writeFileSync(path.join(root,'scene-build.json'),JSON.stringify({scope:'CONTROLLED_ACTUAL_SCENE_NOT_RELEASE',fixture,mainSHA256:sha(path.join(fixture,'assets/main.js')),checksSHA256:sha(path.join(fixture,'assets/area-checks.js'))},null,2)+'\n');console.log(fixture);

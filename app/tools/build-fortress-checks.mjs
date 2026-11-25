@@ -1,0 +1,14 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Defense checks require playtest');
+const {buildOptions}=await import('./build.mjs'),root=path.resolve(process.env.FORTRESS_CHECK_DIR||'../.local/checks/fortress-fusion-pilot-20261104'),fixture=path.join(root,'scene-dist');mkdirSync(fixture,{recursive:true});cpSync(buildConfig().dist,fixture,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/fortress-checks.ts'],outfile:path.join(fixture,'assets/fortress-checks.js')});
+writeFileSync(path.join(fixture,'fortress-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/fortress-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+await build({...buildOptions,entryPoints:['tests/fixtures/companion-checks.ts'],outfile:path.join(fixture,'assets/companion-checks.js')});
+writeFileSync(path.join(fixture,'companion-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/companion-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+await build({...buildOptions,entryPoints:['tests/fixtures/fortress-fusion-checks.ts'],outfile:path.join(fixture,'assets/fusion-checks.js')});
+writeFileSync(path.join(fixture,'fusion-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/fusion-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');writeFileSync(path.join(root,'scene-build.json'),JSON.stringify({scope:'CONTROLLED_D1_D2_D3_ACTUAL_SCENE_NOT_RELEASE',fixture,mainSHA256:sha(path.join(fixture,'assets/main.js')),checksSHA256:sha(path.join(fixture,'assets/fortress-checks.js')),companionChecksSHA256:sha(path.join(fixture,'assets/companion-checks.js')),fusionChecksSHA256:sha(path.join(fixture,'assets/fusion-checks.js'))},null,2)+'\n');console.log(fixture);

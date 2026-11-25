@@ -1,0 +1,29 @@
+{
+  "frames": [
+    {
+      "filename": "body",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 367,
+        "h": 371
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 4,
+        "y": 3,
+        "w": 367,
+        "h": 371
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 384
+      }
+    }
+  ],
+  "meta": {
+    "image": "assets/ui-CAT01.png",
+    "scale": "1"
+  }
+}

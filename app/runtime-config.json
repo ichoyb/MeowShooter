@@ -1,0 +1,14 @@
+{
+  "release": {
+    "courtyardEnabled": false,
+    "combatSliceEnabled": false
+  },
+  "review": {
+    "courtyardEnabled": false,
+    "combatSliceEnabled": false
+  },
+  "playtest": {
+    "courtyardEnabled": true,
+    "combatSliceEnabled": true
+  }
+}

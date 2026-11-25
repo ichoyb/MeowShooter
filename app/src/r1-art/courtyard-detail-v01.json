@@ -1,0 +1,44 @@
+{
+  "sourceSize": {
+    "width": 887,
+    "height": 1774
+  },
+  "regions": [
+    {
+      "name": "north-flowers",
+      "x": 140,
+      "y": 300,
+      "width": 192,
+      "atlasX": 0,
+      "atlasY": 0,
+      "height": 160
+    },
+    {
+      "name": "east-flowers",
+      "x": 660,
+      "y": 700,
+      "width": 96,
+      "atlasX": 192,
+      "atlasY": 0,
+      "height": 160
+    },
+    {
+      "name": "south-flowers",
+      "x": 160,
+      "y": 1245,
+      "width": 192,
+      "atlasX": 0,
+      "atlasY": 160,
+      "height": 160
+    },
+    {
+      "name": "southeast-edge",
+      "x": 650,
+      "y": 1450,
+      "width": 106,
+      "atlasX": 192,
+      "atlasY": 160,
+      "height": 160
+    }
+  ]
+}

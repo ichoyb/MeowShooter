@@ -1,0 +1,14 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Slice fixture requires existing playtest profile');
+const {buildOptions}=await import('./build.mjs');
+const ordinary=process.argv.includes('--ordinary');
+const boss=process.argv.includes('--boss');
+const config=buildConfig(),folder=path.resolve('../.local/checks/'+(boss?'elite-boss-local':ordinary?'ordinary-combat-local':'first-combat-local')+'/fixture');
+mkdirSync(folder,{recursive:true});cpSync(config.dist,folder,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/'+(boss?'courtyard-boss-combat':ordinary?'courtyard-ordinary-combat':'courtyard-combat-slice')+'.ts'],outfile:path.join(folder,'assets/slice-checks.js')});
+writeFileSync(path.join(folder,'checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/checks.css"><script defer src="./assets/slice-checks.js"></script></head><body><div id="stage"></div><pre id="result">BOOT</pre></body></html>');
+writeFileSync(path.join(folder,'assets/checks.css'),'body{margin:0;background:#fff5e2}#stage{width:390px;height:844px;position:relative}pre{white-space:pre-wrap}');
+console.log(JSON.stringify({fixture:folder,scope:'CONTROLLED_SCENE_NOT_PLAYER_BUILD'}));

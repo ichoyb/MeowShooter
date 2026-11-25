@@ -1,0 +1,93 @@
+import './courtyard-combat-slice';
+declare function require(path:string):any;
+const w=window as any;
+w.runOrdinaryChecks=()=>{
+ const {a,battle,g,step,tick,start,position}=w.sliceFixture,checks:any[]=[];
+ const check=(name:string,condition:unknown,actual:unknown)=>{checks.push({name,pass:!!condition,actual:JSON.parse(JSON.stringify(actual))});if(!condition)throw Error(name);};
+ const near=(x:number,y:number)=>Math.abs(x-y)<.001;
+ const resume=()=>{const wake=g.loop.wake;g.loop.wake=()=>{};battle.resume();g.loop.wake=wake;g.loop.sleep();g.scene.processQueue();};
+ const flowerAt=()=>{start();const flower=a.placeSliceEnemy('E04',520,720);flower.setData('hp',10000);return flower;};
+ const quiet=(flower:any)=>{flower.getData('behavior').nextAttack=1000;};
+ const fire=(flower:any,direction={x:-1,y:0})=>{flower.getData('behavior').direction={...direction};return a.emitBubble(flower);};
+ try{
+  start();let s=battle.snapshot();
+  check('normal CAT01 local run uses the 600-second first-level content',s.durationSeconds===600&&s.presentation.bodyDisplay.width===30,{duration:s.durationSeconds,content:s.contentId});
+  check('battle fixture owns all13 decoded sources; UI icons checked in normal page',s.imageBudget.sourceRGBA===4864064&&s.imageBudget.sources.length===13,s.imageBudget);
+  const left=a.placeSliceEnemy('E03',520,720),right=a.placeSliceEnemy('E03',520,720);step();
+  check('E03 uses opposite stable-ID flank goals and native 96u/s motion',left.getData('behavior').flankGoal.y<720&&right.getData('behavior').flankGoal.y>720&&Math.abs(left.body.velocity.length()-96)<.001,{left:left.getData('behavior'),right:right.getData('behavior'),speed:left.body.velocity.length()});
+  start();const flower=a.placeSliceEnemy('E04',520,720);flower.setData('hp',10000);step();
+  check('E04 enters a readable warning and has a genuine mouth world point',flower.getData('behavior').phase==='warning'&&!!flower.getData('art').mouthPoint(),flower.getData('behavior'));
+  step(30);check('E04 cannot shoot before .9s warning',battle.snapshot().enemyProjectiles.length===0,battle.snapshot().enemyProjectiles);
+  battle.pause('menu');g.scene.processQueue();const paused=JSON.stringify({elapsed:battle.snapshot().elapsed,behavior:flower.getData('behavior'),art:flower.getData('art').snapshot()});step(90);
+  check('pause freezes flower warning and mouth tween',paused===JSON.stringify({elapsed:battle.snapshot().elapsed,behavior:flower.getData('behavior'),art:flower.getData('art').snapshot()}),paused);
+  resume();while(battle.snapshot().elapsed<.94)step();
+  let shots=battle.snapshot().enemyProjectiles;const bubble=a.enemyProjectiles.getFirstAlive(),origin=bubble.getData('origin');
+  check('exactly one real bubble is emitted after warning',shots.length===1,shots);
+  check('bubble uses mouth world transform, 12u visual, 4u body and 140u/s velocity',near(origin.x,flower.getData('art').mouthPoint().x)&&near(origin.y,flower.getData('art').mouthPoint().y)&&bubble.displayWidth===12&&bubble.body.halfWidth===4&&near(bubble.body.velocity.length(),140),{origin,mouth:flower.getData('art').mouthPoint(),display:bubble.displayWidth,radius:bubble.body.halfWidth,speed:bubble.body.velocity.length()});
+  quiet(flower);const direction={x:bubble.body.velocity.x,y:bubble.body.velocity.y};position(a.cat,360,850);step(5);
+  check('released bubble stays straight when player changes position',near(bubble.body.velocity.x,direction.x)&&near(bubble.body.velocity.y,direction.y),{velocity:direction,current:bubble.body.velocity});
+  battle.pause('background');g.scene.processQueue();const frozen=JSON.stringify({pos:{x:bubble.x,y:bubble.y},time:borrowTimer(bubble),elapsed:battle.snapshot().elapsed});step(120);
+  check('background freezes bubble flight and native Clock lifetime',frozen===JSON.stringify({pos:{x:bubble.x,y:bubble.y},time:borrowTimer(bubble),elapsed:battle.snapshot().elapsed}),frozen);resume();step();
+  check('explicit continue resumes without old movement or queued shots',!battle.snapshot().moveHeld&&battle.snapshot().enemyProjectiles.length===1,battle.snapshot().enemyProjectiles);
+  const oldHp=flower.getData('hp');a.recycle(flower,a.enemies);step(30);
+  check('already emitted bubble survives shooter death',bubble.active&&bubble.body.enable,{active:bubble.active,oldHp});
+  const x0=bubble.body.center.x;while(bubble.active&&battle.snapshot().elapsed<4)step();
+  check('unhit bubble expires via Clock at 2.5 seconds without damage',!bubble.active&&battle.snapshot().hp===90&&battle.snapshot().elapsed<3.6,{elapsed:battle.snapshot().elapsed,hp:battle.snapshot().hp,flightFrom:x0,endX:bubble.body.center.x});
+  const cancelled=flowerAt();step();position(cancelled,10,720);step();
+  check('unreadable flower warning cancels instead of shooting from offscreen',cancelled.getData('behavior').phase==='chase'&&battle.snapshot().enemyProjectiles.length===0,cancelled.getData('behavior'));
+  const obscured=flowerAt();step();const view=battle.snapshot().engine.camera.view;
+  position(obscured,view.x+view.width/2,view.y+3);step();
+  check('flower cannot begin or finish warnings under excluded HUD band',obscured.getData('behavior').phase==='chase'&&battle.snapshot().enemyProjectiles.length===0,obscured.getData('behavior'));
+
+  const killed=flowerAt();step(20);a.recycle(killed,a.enemies);step(70);
+  check('death during warning emits no delayed ghost projectile',battle.snapshot().enemyProjectiles.length===0,battle.snapshot().engine.groups.enemyProjectiles);
+  const close=flowerAt();position(close,460,720);step();check('flower retreats inside 140u',close.body.velocity.x>0,{velocity:close.body.velocity,phase:close.getData('behavior').phase});
+  position(close,600,720);step();check('flower approaches beyond 200u',close.body.velocity.x<0,close.body.velocity);
+  position(close,530,720);step();check('flower holds position within 140 to 200u',near(close.body.velocity.length(),0),close.body.velocity);
+  const hitFlower=flowerAt();quiet(hitFlower);const hit=fire(hitFlower);position(hit,410,720);hit.setVelocity(-140,0);step(25);
+  check('real bubble contact deals exactly 10 and consumes projectile',battle.snapshot().hp===80&&!hit.active,{hp:battle.snapshot().hp,active:hit.active});
+  const protectedShot=fire(hitFlower);position(protectedShot,375,720);step();
+  check('invulnerable contact still consumes bubble without extra damage',battle.snapshot().hp===80&&!protectedShot.active,{hp:battle.snapshot().hp,active:protectedShot.active});
+  step(45);const afterProtection=fire(hitFlower);position(afterProtection,375,720);step();
+  check('bubble hurts again only after shared .7s protection',battle.snapshot().hp===70,battle.snapshot().hp);
+  const shared=flowerAt();quiet(shared);a.placeSliceEnemy('E01',360,720);const simultaneous=fire(shared);position(simultaneous,360,720);step();
+  check('contact and bubble use one shared .7s gate; no same-frame stacking',battle.snapshot().hp===82&&!simultaneous.active,battle.snapshot().hp);
+  const longFrame=flowerAt();quiet(longFrame);const crossing=fire(longFrame);position(crossing,410,720);crossing.setVelocity(-140,0);tick(500);
+  check('native relative sweep catches long-frame bubble crossing',battle.snapshot().hp===80&&!crossing.active,{hp:battle.snapshot().hp,active:crossing.active});
+  const nearMiss=flowerAt();quiet(nearMiss);const missed=fire(nearMiss);position(missed,410,737);missed.setVelocity(-140,0);tick(500);
+  check('bubble near miss does not widen combined 16u contact radius',battle.snapshot().hp===90&&missed.active,{hp:battle.snapshot().hp,active:missed.active});
+  const friendly=flowerAt();quiet(friendly);const friend=a.placeSliceEnemy('E03',480,740);friend.setData('hp',10000);const friendlyBubble=fire(friendly);position(friendlyBubble,480,740);a.physics.world.update(0,0);a.resolveBubbles();
+  check('enemy bubble never damages its shooter or other enemies',friendlyBubble.active&&friend.getData('hp')===10000&&friendly.getData('hp')===10000,{bubbleActive:friendlyBubble.active,friendHp:friend.getData('hp'),shooterHp:friendly.getData('hp')});
+  a.projectile({x:480,y:740},0,'bell','PRIMARY',99,12,0,0,1);const primary=a.projectiles.getFirstAlive();a.physics.world.update(0,0);
+  const candidates=require('../../src/battle-hits.cjs').hitCandidates(primary,a.physics);
+  check('enemy projectiles remain a separate kind and cannot absorb player bullets',friendlyBubble.getData('kind')==='enemyProjectile'&&!candidates.some((c:any)=>c.target===friendlyBubble),{kind:friendlyBubble.getData('kind'),candidateKinds:candidates.map((c:any)=>c.target.getData('kind'))});
+  const capped=flowerAt();quiet(capped);for(let i=0;i<16;i++)fire(capped,{x:0,y:1});
+  check('native enemy projectile Group caps at 16 and skips excess shot',a.enemyProjectiles.countActive(true)===16&&fire(capped)===null,battle.snapshot().engine.groups.enemyProjectiles);
+  start();check('restart clears all enemy bullets, old targets and lifetime events',battle.snapshot().enemyProjectiles.length===0&&battle.snapshot().engine.timers===0&&battle.snapshot().enemies===0,{groups:battle.snapshot().engine.groups,timers:battle.snapshot().engine.timers});
+  const warm=()=>{start();for(const id of ['E01','E02','E03','E04']){const e=a.placeSliceEnemy(id,430,720);e.setData('hp',10000);if(id==='E04')for(let j=0;j<16;j++)fire(e,{x:0,y:1});}step();};
+  warm();const childCount=a.children.length;
+  for(let i=0;i<20;i++){start(i%2?'CAT02':'CAT03');warm();}
+  check('20 mixed restarts plateau native nodes and groups',a.children.length===childCount&&a.enemyProjectiles.getLength()===16,{warm:childCount,after:a.children.length,group:battle.snapshot().engine.groups.enemyProjectiles});
+  start('CAT02');check('other cats retain 120s duration and prior rules',battle.snapshot().durationSeconds===120&&a.cat.displayWidth===58,battle.snapshot().durationSeconds);
+  start();const flank=a.placeSliceEnemy('E03',420,720);step();check('E03 switches to direct pursuit within 70u',flank.getData('behavior').flankGoal===null&&flank.body.velocity.x<0,flank.getData('behavior'));
+  position(flank,550,720);step();const oldGoal=JSON.stringify(flank.getData('behavior').flankGoal);position(a.cat,350,800);step(60);
+  check('flank goal remains fixed between 1.2s refreshes',JSON.stringify(flank.getData('behavior').flankGoal)===oldGoal,{oldGoal,newGoal:flank.getData('behavior').flankGoal});
+  start();const edgeFlanker=a.placeSliceEnemy('E03',360,500);position(a.cat,18,18);step();
+  const goal=edgeFlanker.getData('behavior').flankGoal;
+  check('flank destinations use native Clamp within courtyard margin',goal.x>=24&&goal.x<=696&&goal.y>=24&&goal.y<=1416,goal);
+  start();a.spawns.take=()=>null;while(battle.snapshot().elapsed<110.01)step();
+  a.placeSliceEnemy('E03',100,100);a.placeSliceEnemy('E03',120,100);a.spawnCourtyardEnemy('E03');
+  check('actual spawn entry caps E03 at two',battle.snapshot().enemyBehaviors.filter((e:any)=>e.enemyId==='E03').length===2,battle.snapshot().enemyBehaviors);
+  a.spawnCourtyardEnemy('E02');check('retired E02 cannot enter through the production spawn API',!battle.snapshot().enemyBehaviors.some((e:any)=>e.enemyId==='E02'),battle.snapshot().enemyBehaviors);
+  a.placeSliceEnemy('E04',140,100);a.spawnCourtyardEnemy('E04');a.placeSliceEnemy('E02',160,100);a.spawnCourtyardEnemy('E02');
+  check('actual spawn entry caps E04 and E02 at one each',battle.snapshot().enemyBehaviors.filter((e:any)=>e.enemyId==='E04').length===1&&battle.snapshot().enemyBehaviors.filter((e:any)=>e.enemyId==='E02').length===1,battle.snapshot().enemyBehaviors);
+  for(let i=0;i<8;i++)a.placeSliceEnemy('E01',200+i*30,100);a.spawnCourtyardEnemy('E01');
+  check('current 60–150s stage respects twelve-enemy shared ordinary cap',battle.snapshot().enemies===12,battle.snapshot().engine.groups.enemies);
+  // Scene still owns genuine movement, combat and result; the fixture disables
+  // natural spawns only in this controlled deadline check, never in player code.
+  start();a.spawns.take=()=>null;tick(600000);
+  check('actual Session times out at 600s without a defeated Boss',battle.snapshot().elapsed===600&&battle.snapshot().result==='timeout'&&battle.snapshot().enemyProjectiles.length===0,{elapsed:battle.snapshot().elapsed,result:battle.snapshot().result});
+  return w.ordinaryResults={status:'PASS',checks};
+ }catch(error){return w.ordinaryResults={status:'FAIL',error:String(error),checks};}
+};
+function borrowTimer(shot:any){return shot.getData('lifeTimer')?.elapsed??null;}

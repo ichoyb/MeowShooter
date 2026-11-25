@@ -1,0 +1,13 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Growth fixture requires playtest');
+const {buildOptions}=await import('./build.mjs');
+const config=buildConfig(),folder=path.resolve(process.env.GROWTH_CHECK_DIR||'../.local/checks/progression-pilot-20261024','fixture');
+mkdirSync(folder,{recursive:true});cpSync(config.dist,folder,{recursive:true});
+for(const name of ['combat','ui'])await build({...buildOptions,entryPoints:['tests/fixtures/progression-'+name+'.ts'],outfile:path.join(folder,'assets/growth-'+name+'.js')});
+writeFileSync(path.join(folder,'checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/checks.css"><script defer src="./assets/growth-combat.js"></script></head><body><div id="stage"></div></body></html>');
+writeFileSync(path.join(folder,'assets/checks.css'),'body{margin:0}#stage{width:390px;height:844px;position:relative}');
+writeFileSync(path.join(folder,'ui.html'),readFileSync(path.join(folder,'index.html'),'utf8').replace('./assets/main.js','./assets/growth-ui.js'));
+console.log(JSON.stringify({fixture:folder,scope:'CONTROLLED_FIXTURE_NOT_PLAYER_BUILD'}));

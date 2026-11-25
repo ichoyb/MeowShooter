@@ -1,0 +1,50 @@
+{
+  "frames": [
+    {
+      "filename": "body",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 305,
+        "h": 352
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 69,
+        "y": 17,
+        "w": 305,
+        "h": 352
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 384
+      }
+    },
+    {
+      "filename": "h1-head",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 305,
+        "h": 161
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 69,
+        "y": 17,
+        "w": 305,
+        "h": 161
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 178
+      }
+    }
+  ],
+  "meta": {
+    "image": "assets/ui-CAT02.png",
+    "scale": "1"
+  }
+}

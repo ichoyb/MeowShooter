@@ -1,0 +1,9 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto'),{spawn}=require('node:child_process');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const root=path.resolve(process.env.SUSTAIN_CHECK_DIR||'../.local/checks/sustain-pilot-20261105'),port=process.env.SUSTAIN_SCENE_PORT||'8997',errors=[];
+const runnerSHA256=crypto.createHash('sha256').update(fs.readFileSync(__filename)).digest('hex');let browser,server,result;
+(async()=>{try{server=spawn(process.execPath,[path.join(__dirname,'serve.mjs')],{cwd:path.resolve(__dirname,'..'),env:{...process.env,APP_DIST:path.join(root,'scene-dist'),PORT:port},windowsHide:true,stdio:['ignore','pipe','pipe']});await new Promise((r,j)=>{server.stdout.once('data',r);server.once('error',j);server.once('exit',c=>j(Error('server '+c)));});
+ browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage();page.on('pageerror',e=>errors.push(String(e)));await page.goto('http://127.0.0.1:'+port+'/sustain-checks.html');await page.waitForFunction(()=>window.sustainChecksReady||window.sustainChecksBootError);
+ result=await page.evaluate(()=>window.sustainChecksBootError?{status:'FAIL',error:window.sustainChecksBootError}:window.runSustainChecks());assert.equal(result.status,'PASS',result.error);assert.deepEqual(errors,[]);
+ fs.writeFileSync(path.join(root,'scene.json'),JSON.stringify({browser:browser.version(),artifact:JSON.parse(fs.readFileSync(path.join(root,'scene-build.json'),'utf8')),runnerSHA256,...result,pageErrors:errors},null,2)+'\n');console.log('PASS P1 actual Scene '+result.checks.length);
+}catch(e){fs.writeFileSync(path.join(root,'scene.json'),JSON.stringify({status:'FAIL',error:String(e),stack:e.stack,runnerSHA256,sceneResult:result,pageErrors:errors},null,2)+'\n');console.error(e);process.exitCode=1;}finally{await browser?.close();server?.kill();}})();

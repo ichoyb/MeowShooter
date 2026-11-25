@@ -1,0 +1,10 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Stances checks require playtest');
+const {buildOptions}=await import('./build.mjs'),root=path.resolve(process.env.STANCES_CHECK_DIR||'../.local/checks/stance-pilot-20261105'),dist=path.join(root,'scene-dist');mkdirSync(dist,{recursive:true});cpSync(buildConfig().dist,dist,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/stances-checks.ts'],outfile:path.join(dist,'assets/stances-checks.js')});
+writeFileSync(path.join(dist,'stances-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/style.css"><script defer src="./assets/stances-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div><div id="cardProbe"></div></body></html>');
+const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');writeFileSync(path.join(root,'scene-build.json'),JSON.stringify({scope:'P3_CONTROLLED_ACTUAL_ARENA_NOT_RELEASE',dist,mainSHA256:sha(path.join(dist,'assets/main.js')),checksSHA256:sha(path.join(dist,'assets/stances-checks.js'))},null,2)+'\n');console.log(dist);

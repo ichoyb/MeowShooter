@@ -1,0 +1,44 @@
+{
+  "CAT01.png": {
+    "logicalSize": {
+      "w": 384,
+      "h": 384
+    },
+    "destination": {
+      "x": 4,
+      "y": 3,
+      "w": 367,
+      "h": 371
+    },
+    "canvasRule": "Draw the current cropped original into the same384logical window; keep approved visible height359px.",
+    "image": "assets/ui-CAT01.png"
+  },
+  "CAT02.png": {
+    "logicalSize": {
+      "w": 384,
+      "h": 384
+    },
+    "destination": {
+      "x": 69,
+      "y": 17,
+      "w": 305,
+      "h": 352
+    },
+    "canvasRule": "size backing canvas from the original 384x384 logical window; draw the cropped source at destination scaled by backingWidth/384; do not decode a restored PNG",
+    "image": "assets/ui-CAT02.png"
+  },
+  "CAT03.png": {
+    "logicalSize": {
+      "w": 384,
+      "h": 384
+    },
+    "destination": {
+      "x": 76,
+      "y": 16,
+      "w": 291,
+      "h": 355
+    },
+    "canvasRule": "size backing canvas from the original 384x384 logical window; draw the cropped source at destination scaled by backingWidth/384; do not decode a restored PNG",
+    "image": "assets/ui-CAT03.png"
+  }
+}

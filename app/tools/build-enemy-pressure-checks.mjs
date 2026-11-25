@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,writeFileSync} from 'node:fs';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Enemy pressure fixture requires playtest');
+const {buildOptions}=await import('./build.mjs'),config=buildConfig();
+const folder=path.resolve(process.env.PRESSURE_CHECK_DIR||'../.local/checks/enemy-pressure-20261024','fixture');
+mkdirSync(folder,{recursive:true});cpSync(config.dist,folder,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/enemy-pressure-combat.ts'],outfile:path.join(folder,'assets/pressure-checks.js')});
+writeFileSync(path.join(folder,'checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/checks.css"><script defer src="./assets/pressure-checks.js"></script></head><body><div id="stage"></div><pre id="result"></pre></body></html>');
+writeFileSync(path.join(folder,'assets/checks.css'),'body{margin:0}#stage{width:390px;height:844px;position:relative}');
+console.log(JSON.stringify({fixture:folder,scope:'CONTROLLED_FIXTURE_NOT_PLAYER_BUILD'}));

@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const companion=process.argv.includes('--companion');
+const fusion=process.argv.includes('--fusion'),entry=fusion?'fusion':companion?'companion':'fortress';
+const root=path.resolve(process.env.FORTRESS_CHECK_DIR||'../.local/checks/fortress-fusion-pilot-20261104'),port=process.env.FORTRESS_SCENE_PORT||'8984';let browser,server;const errors=[];
+(async()=>{try{server=spawn(process.execPath,[path.join(__dirname,'serve.mjs')],{cwd:path.resolve(__dirname,'..'),env:{...process.env,APP_DIST:path.join(root,'scene-dist'),PORT:port},windowsHide:true,stdio:['ignore','pipe','pipe']});await new Promise((r,j)=>{server.stdout.once('data',r);server.once('error',j);server.once('exit',c=>j(Error('server '+c)));});
+ browser=await chromium.launch({channel:'chrome',headless:true});const page=await browser.newPage();page.on('pageerror',e=>errors.push(String(e)));await page.goto('http://127.0.0.1:'+port+'/'+entry+'-checks.html');await page.waitForFunction(entry=>window[entry+'ChecksReady']||window[entry+'ChecksBootError'],entry);
+ const result=await page.evaluate(entry=>window[entry+'ChecksBootError']?{status:'FAIL',error:window[entry+'ChecksBootError']}:window['run'+entry[0].toUpperCase()+entry.slice(1)+'Checks'](),entry);
+ fs.writeFileSync(path.join(root,process.env.FORTRESS_REPORT||(fusion?'fusion-scene.json':companion?'companion-scene.json':'scene.json')),JSON.stringify({browser:browser.version(),artifact:JSON.parse(fs.readFileSync(path.join(root,'scene-build.json'),'utf8')),...result,pageErrors:errors},null,2)+'\n');assert.equal(result.status,'PASS',result.error);assert.deepEqual(errors,[]);console.log('PASS '+(fusion?'D3':companion?'D2':'D1')+' actual Scene '+result.checks.length);
+}catch(e){console.error(e);process.exitCode=1;}finally{await browser?.close();server?.kill();}})();

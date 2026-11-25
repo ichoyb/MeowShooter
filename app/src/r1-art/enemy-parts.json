@@ -1,0 +1,134 @@
+{
+  "frames": [
+    {
+      "filename": "b01-paw-left",
+      "frame": {
+        "x": 299,
+        "y": 326,
+        "w": 81,
+        "h": 86
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 3,
+        "y": 30,
+        "w": 81,
+        "h": 86
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    {
+      "filename": "b01-paw-right",
+      "frame": {
+        "x": 106,
+        "y": 358,
+        "w": 103,
+        "h": 91
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 15,
+        "y": 34,
+        "w": 103,
+        "h": 91
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    {
+      "filename": "e03-tail",
+      "frame": {
+        "x": 330,
+        "y": 239,
+        "w": 50,
+        "h": 48
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 75,
+        "y": 11,
+        "w": 50,
+        "h": 48
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    {
+      "filename": "e04-mouth",
+      "frame": {
+        "x": 367,
+        "y": 412,
+        "w": 13,
+        "h": 16
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 65,
+        "y": 56,
+        "w": 13,
+        "h": 16
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    {
+      "filename": "el01-arm-left",
+      "frame": {
+        "x": 301,
+        "y": 474,
+        "w": 56,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 11,
+        "y": 70,
+        "w": 56,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    },
+    {
+      "filename": "el01-arm-right",
+      "frame": {
+        "x": 330,
+        "y": 287,
+        "w": 48,
+        "h": 35
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 73,
+        "y": 70,
+        "w": 48,
+        "h": 35
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    }
+  ],
+  "meta": {
+    "image": "assets/enemies.png",
+    "scale": "1"
+  }
+}

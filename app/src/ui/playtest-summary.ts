@@ -1,0 +1,14 @@
+import type {PlaytestSummary,DamageSource} from '../playtest-summary';
+import {button,esc} from './components';
+export const chapterObjective='留在庭院中走位，猫咪会自动攻击。拾取星光升级，在十分钟内击败雾壳巨兽。';
+const sourceLabels:Record<DamageSource,string>={E01_CONTACT:'雾团接触',E02_CONTACT:'蹦蹦雾接触',E02_DASH:'蹦蹦雾蹦冲',E03_CONTACT:'疾影雾接触',E04_CONTACT:'花芽雾接触',E04_PROJECTILE:'花芽雾弹丸',EL01_CONTACT:'精英怪接触',EL01_DASH:'精英怪冲锋',B01_CONTACT:'雾壳巨兽接触',B01_DASH:'雾壳巨兽冲锋',B01_SLAM:'雾壳巨兽拍地',B01_PROJECTILE:'雾壳巨兽弹幕'};
+const outcome={playing:'仍在进行',restarted:'已重开',abandoned:'主动结束',cleared:'已通关',death:'生命耗尽',timeout:'十分钟超时',survived:'已完成'};
+export function summaryTime(seconds:number|null):string {if(seconds===null)return '未完成';return Math.floor(seconds/60).toString().padStart(2,'0')+':'+Math.floor(seconds%60).toString().padStart(2,'0');}
+export function playtestSummaryView(current:PlaytestSummary|null,previous:PlaytestSummary|null,showPrevious:boolean,version:string,build:string,names:{cat:string;weapon:string}):{title:string;body:string;footer:string;courtyardUI?:boolean}{
+ const s=showPrevious?previous:current??previous;
+ const row=(label:string,value:string)=>`<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`;
+ if(!s)return {title:'本局试玩摘要',body:'<p>当前会话还没有对局记录。</p>',footer:button('close','返回原位置','primary')};
+ const fields=[['出战',names.cat+' / '+names.weapon],['本局结果',outcome[s.outcome]],['有效战斗时长',summaryTime(s.elapsed)],['当前等级','Lv. '+s.level],['经验升级',s.upgrades+'次'],['精英奖励',s.eliteRewards+'次'],['Boss遭遇',s.bossEncountered?'已遭遇':'尚未出现'],['死亡来源',s.outcome==='death'?(s.deathSource?sourceLabels[s.deathSource]:'未记录'): '未发生']];
+ return {title:showPrevious?'上一局试玩摘要':'本局试玩摘要',body:`<section class="run-summary"><p class="run-summary-meta">版本 ${esc(version)} · 构建 ${esc(build)} · 仅本会话</p>${previous&&current?`<nav class="run-summary-tabs">${button('summary-current','本局')}${button('summary-previous','上一局')}</nav>`:''}<div class="run-summary-grid">${fields.map(([label,value])=>row(label,value)).join('')}</div><div class="run-summary-milestones">${row('首次移动',summaryTime(s.first.move))}${row('首怪完整可见',summaryTime(s.first.enemy))}${row('首次主弹命中',summaryTime(s.first.hit))}${row('首次拾取经验',summaryTime(s.first.pickup))}${row('首次经验升级',summaryTime(s.first.upgrade))}</div><p class="run-summary-privacy">可以自行截图反馈。不会自动上传，不包含账号或设备指纹；关闭后不保证保留。</p></section>`,footer:button('close','返回原位置','primary')};
+}
+export function onboardingHelpView():{title:string;body:string;footer:string;courtyardUI?:boolean}{return {title:'怎么守住庭院',body:`<section class="run-guide"><p>${chapterObjective}</p><ol><li><strong>拖动空白处移动</strong>，松手就停，不用寻找出口。</li><li><strong>攻击和装填自动进行</strong>，装填时也能移动。</li><li><strong>靠近星光拾取经验</strong>，经验满后选择本局强化。</li><li><strong>选中再确认</strong>，继续走位，留意精英和Boss的危险预警。</li></ol></section>`,footer:button('close','返回暂停','primary')};}

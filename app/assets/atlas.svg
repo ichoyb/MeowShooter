@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="64" viewBox="0 0 512 64">
+<g fill="#b7a4d5" stroke="#6a567e" stroke-width="3" stroke-linejoin="round"><path d="M9 42Q7 14 31 13Q56 13 55 42L48 52L40 47L31 53L23 47L15 52Z"/><path d="M73 44Q73 12 95 11Q119 14 119 44L111 51L103 46L95 51L87 46L79 51Z"/></g>
+<g fill="#51415f"><ellipse cx="24" cy="30" rx="3" ry="4"/><ellipse cx="40" cy="30" rx="3" ry="4"/><ellipse cx="88" cy="28" rx="3" ry="4"/><ellipse cx="104" cy="28" rx="3" ry="4"/></g>
+<g fill="none" stroke="#6a567e" stroke-width="2.5" stroke-linecap="round"><path d="M27 39Q32 43 37 39"/><path d="M92 39Q96 34 100 39"/></g>
+<g fill="#eab64b" stroke="#996832" stroke-width="3"><circle cx="160" cy="17" r="7"/><path d="M145 30Q145 20 160 20Q176 20 175 30L180 47L140 47Z"/><circle cx="160" cy="49" r="5"/></g><path d="M149 38H171" stroke="#fff4c7" stroke-width="4" stroke-linecap="round"/>
+<g fill="#dba65d" stroke="#987243" stroke-width="3" stroke-linejoin="round"><rect x="203" y="13" width="42" height="40" rx="6"/><path d="M208 18L240 48M240 18L208 48"/></g><path d="M224 23V41M215 32H233" stroke="#f6d895" stroke-width="4" stroke-linecap="round"/>
+<!-- Fish: reuse the W04 silhouette and markings at runtime icon size. -->
+<g transform="translate(288 32) scale(.68) rotate(180)"><path d="M-30 0Q-9-24 21-8L33-21L31-3L33 17L21 7Q-10 25-30 0Z" fill="#E9BE7B" stroke="#5B4130" stroke-width="2.7" stroke-linejoin="round"/><path d="M-20 0H20M-10-11V11M0-14V14M10-11V11" stroke="#C29252" stroke-width="2.4"/><circle cx="-17" cy="-3" r="3" fill="#5B4130"/></g>
+<!-- Bone: reuse W02's fish-bone projectile, without the launcher handle. -->
+<g transform="translate(352 32) scale(.8)"><path d="M-25-14H14L27-5L14 5H-25L-15-5Z" fill="#FFF0CC" stroke="#5B4130" stroke-width="2.7" stroke-linejoin="round"/><circle cx="14" cy="-7" r="2.5" fill="#5B4130"/><path d="M-13-11V2M-6-11V2M1-11V2M8-11V2M-25-14L-32-22V-1" fill="none" stroke="#5B4130" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></g>
+<!-- Spirit and its shot: reuse the existing SUMMON star; separate frames. -->
+<g transform="translate(416 32)"><polygon points="0,-26 7.34,-10.1 24.73,-8.03 11.87,3.86 15.28,21.03 0,12.48 -15.28,21.03 -11.87,3.86 -24.73,-8.03 -7.34,-10.1" fill="#C9B6E4" stroke="#71598F" stroke-width="2" stroke-linejoin="round"/><ellipse cx="-7" cy="0" rx="2.5" ry="3.5" fill="#584337"/><ellipse cx="7" cy="0" rx="2.5" ry="3.5" fill="#584337"/><path d="M-4 8Q0 12 4 8" fill="none" stroke="#5B4130" stroke-width="2.4" stroke-linecap="round"/><path d="M-18-13L-15-17" stroke="#F5EFFF" stroke-width="3"/></g>
+<g transform="translate(480 32) scale(.6)"><polygon points="0,-26 7.34,-10.1 24.73,-8.03 11.87,3.86 15.28,21.03 0,12.48 -15.28,21.03 -11.87,3.86 -24.73,-8.03 -7.34,-10.1" fill="#DCD0EC" stroke="#71598F" stroke-width="3" stroke-linejoin="round"/></g>
+</svg>

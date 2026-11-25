@@ -1,0 +1,29 @@
+{
+  "frames": [
+    {
+      "filename": "head",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 70,
+        "h": 60
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 26,
+        "y": 4,
+        "w": 70,
+        "h": 60
+      },
+      "sourceSize": {
+        "w": 128,
+        "h": 128
+      }
+    }
+  ],
+  "meta": {
+    "image": "assets/orange-parts.png",
+    "scale": "1"
+  }
+}

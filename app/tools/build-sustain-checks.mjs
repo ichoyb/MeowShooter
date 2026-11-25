@@ -1,0 +1,10 @@
+import {build} from 'esbuild';
+import {cpSync,mkdirSync,readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import path from 'node:path';
+import {buildConfig} from './build-config.mjs';
+if(process.env.BUILD_PROFILE!=='playtest')throw Error('Sustain checks require playtest');
+const {buildOptions}=await import('./build.mjs'),root=path.resolve(process.env.SUSTAIN_CHECK_DIR||'../.local/checks/sustain-pilot-20261105'),dist=path.join(root,'scene-dist');mkdirSync(dist,{recursive:true});cpSync(buildConfig().dist,dist,{recursive:true});
+await build({...buildOptions,entryPoints:['tests/fixtures/sustain-checks.ts'],outfile:path.join(dist,'assets/sustain-checks.js')});
+writeFileSync(path.join(dist,'sustain-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><script defer src="./assets/sustain-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div></body></html>');
+const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');writeFileSync(path.join(root,'scene-build.json'),JSON.stringify({scope:'P1_CONTROLLED_ACTUAL_ARENA_NOT_RELEASE',dist,mainSHA256:sha(path.join(dist,'assets/main.js')),checksSHA256:sha(path.join(dist,'assets/sustain-checks.js'))},null,2)+'\n');console.log(dist);

@@ -1,0 +1,37 @@
+Copyright (c) 2026 ichoyb, Jojoabcd. All rights reserved.
+
+版权所有 (c) 2026 ichoyb、Jojoabcd，保留一切权利。
+
+本仓库公开《猫咪开火啦》（MeowShooter）的源代码及游戏内美术、音乐素材，仅供查阅。
+除下列情形外，未经版权所有者事先书面许可，任何人不得以任何方式使用、复制、修改、
+合并、发布、分发、再许可或出售本仓库的全部或部分内容，不得据此制作衍生作品，也不得
+将其用于训练机器学习或人工智能模型：
+
+1. 在 GitHub 上浏览本仓库，以及 GitHub 服务条款授予 GitHub 用户的权利；
+2. 比赛主办方及评审为评审本作品而查阅本仓库。
+
+本仓库中的第三方代码（如 app/src/audio/vendor/ 中的 ZzFX、ZzFXM）适用其各自附带的
+许可证，不受上述限制。
+
+本仓库内容按“原样”提供，不附带任何明示或默示的担保。中英文版本如有不一致，以中文
+版本为准。
+
+---
+
+This repository makes the source code and the in-game art and music of
+猫咪开火啦 (MeowShooter) available for viewing only. Except as listed below,
+no one may use, copy, modify, merge, publish, distribute, sublicense or sell
+any part of it, create derivative works from it, or use it to train machine
+learning or artificial intelligence models, without the prior written
+permission of the copyright holders:
+
+1. viewing this repository on GitHub, and the rights that GitHub's Terms of
+   Service grant to GitHub users;
+2. review of this work by competition organizers and judges.
+
+Third-party code in this repository, such as ZzFX and ZzFXM under
+app/src/audio/vendor/, remains under its own license and is not restricted by
+the terms above.
+
+The contents are provided "as is", without warranty of any kind. If the Chinese
+and English versions differ, the Chinese version prevails.

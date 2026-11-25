@@ -1,0 +1,30 @@
+{
+  "archive": {
+    "maxBytes": 3670016,
+    "recommendedBytes": 2097152
+  },
+  "maxSourceEdge": 512,
+  "sourceBudgetModes": {
+    "release": "strict",
+    "review": "strict",
+    "playtest": "strict"
+  },
+  "sourceRGBALimits": {
+    "release": 5242880,
+    "review": 5242880,
+    "playtest": 5242880
+  },
+  "minimumHeadroom": 131072,
+  "backgroundSources": [
+    "assets/ui/garden.jpeg",
+    "assets/r1-restoration/native/courtyard-native-v01.png",
+    "assets/r1-restoration/native/courtyard-native-v01.webp",
+    "assets/narrative/ch01-fish.jpeg",
+    "assets/narrative/ch01-gate.jpeg",
+    "assets/narrative/ch01-plaque.jpeg",
+    "story/ch01-fish.jpeg",
+    "story/ch01-reaction.jpeg",
+    "story/ch01-gate.jpeg",
+    "story/ch01-plaque.jpeg"
+  ]
+}
