@@ -1,3 +1,6 @@
+import type {DevtoolsController} from '../devtools/model';
+// Code guarded by __DEVTOOLS__ serves the local developer tools only; official builds compile it out.
+declare const __DEVTOOLS__:boolean;
 import type PhaserType from 'phaser';
 import Runtime from './phaser-entry.cjs';
 import Hits from './battle-hits.cjs';
@@ -149,6 +152,7 @@ export type BattleCallbacks = {
 export type BattleController = {
   readonly audio: AudioSession | null;
   readonly chapterTimeline: ChapterTimeline | null;
+  devtools?:DevtoolsController;
   start(runConfig?: RunConfig): void; pause(reason: PauseReason): void; resume(): void; reset(): void;
   snapshot(): BattleSnapshot;
   dismissOnboarding():void;skipOnboarding():void;
@@ -292,7 +296,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
       },
     };
   };
-  const emit = () => { if (!disposed) callbacks.onState(snapshot()); };
+  const emit = () => { if (!disposed) callbacks.onState(snapshot()); if(__DEVTOOLS__)require('../devtools/bridge').publish(); };
   const pauseScene = () => { arena.clearOnboarding();arena.interruptG6();arena.feedback?.clear();renderFrames.suspend(); arena.physics.world.pause(); arena.time.paused = true; if (arena.scene.isActive()) arena.scene.pause(); };
   const resumeScene = () => { arena.clearImpact();arena.clearBellEffects();arena.feedback?.clear(); arena.clearBubbleImpact();arena.clearSlamImpact();arena.clearBossDashEffects(); if(__BUILD_PROFILE__==='playtest'&&__COMBAT_SLICE_ENABLED__)arena.tweens.getDelta(true); renderFrames.suspend(); game!.loop.resetDelta(); game!.loop.wake(); arena.time.paused = false; arena.physics.world.resume(); arena.scene.resume(); arena.activeG6?.cat.pause(false);arena.activeG6?.held.pause(false); };
   const onRender = (_renderer: PhaserType.Renderer.Canvas.CanvasRenderer, now: number) => {
@@ -460,7 +464,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
           const updateMotion=()=>this.configureImpact();
           impactMotion!.addListener(updateMotion);this.events.once('shutdown',()=>impactMotion!.removeListener(updateMotion));
         }
-        this.resetEntities(); pauseScene(); window.clearTimeout(bootTimeout); resolveReady(controller); emit();
+        this.resetEntities(); pauseScene(); window.clearTimeout(bootTimeout); if(__DEVTOOLS__)require('../devtools/bridge').attach(controller.devtools!); resolveReady(controller); emit();
       } catch (error) {
         window.clearTimeout(bootTimeout); rejectReady(error instanceof Error ? error : new Error('战斗场景初始化失败。'));
       }
@@ -855,7 +859,8 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
       circleBody(enemy,spec.radius);enemy.enableBody(true,x,y,true,false);resetBody(enemy,x,y);
       const entering=courtyardPilot&&!Phaser.Geom.Rectangle.Contains(this.physics.world.bounds,x,y);
       enemy.setCollideWorldBounds(!entering);
-      enemy.setData({id:this.nextMob++,kind:'enemy',enemyId:id,hp:spec.hp,chill:newChillState(),behavior:newEnemyState(id,session.elapsed),orbitHitAt:-Infinity,art,entering});
+      enemy.setData({id:this.nextMob++,kind:'enemy',enemyId:id,hp:__DEVTOOLS__?spec.hp*session.devtools!.settings.hp:spec.hp,chill:newChillState(),behavior:newEnemyState(id,session.elapsed),orbitHitAt:-Infinity,art,entering});
+      if(__DEVTOOLS__)enemy.setData('devtoolsMaxHP',enemy.getData('hp'));
       art.reset(id,spec.size);art.sync(x,y,enemy.getData('behavior'),0,session.elapsed);
       if(this.activeG6&&f1Art)this.impact?.prepare(art.objects());
       this.correctBounds(enemy);return enemy;
@@ -916,7 +921,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
     bossSnapshot():BattleSnapshot['boss'] {
       const enemy=children(this.enemies).find(e=>e.active&&e.getData('enemyId')==='B01'&&e.getData('hp')>0);if(!enemy)return null;
       const state=enemy.getData('behavior') as EnemyState;
-      return {id:enemy.getData('id'),hp:enemy.getData('hp'),maxHp:ENEMIES.B01.hp,enraged:state.enraged,phase:state.phase};
+      return {id:enemy.getData('id'),hp:enemy.getData('hp'),maxHp:__DEVTOOLS__?enemy.getData('devtoolsMaxHP'):ENEMIES.B01.hp,enraged:state.enraged,phase:state.phase};
     }
     clearSlamImpact():void {
       this.bossEffects?.clear();if(!this.slamImpact)return;this.tweens?.killTweensOf(this.slamImpact);this.slamImpact.clear().setAlpha(0).setScale(1);
@@ -1328,7 +1333,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
       const passiveNow = session.elapsed;
       this.syncHunt();
       const oldSpawn=this.cadence.step(dt, session);
-      if(this.isSlice()){const id=this.spawns.take(session.elapsed);if(id)this.spawnCourtyardEnemy(id);if(!this.specialRetry&&this.level.pending(session.elapsed))this.trySpecialSpawn();for(const encounterId of this.reinforcements.dueEncounters(session.elapsed))this.reinforcements.attempt(session.elapsed,this.spawnCourtyardEnemy('E01',true),encounterId);}
+      if(this.isSlice()){const id=this.spawns.take(session.elapsed);if(id){if(__DEVTOOLS__){const scaled=require('../devtools/model').scaleCount(1,session.devtools!.settings.spawn,session.devtools!.spawnCarry);session.devtools!.spawnCarry=scaled.carry;for(let i=0;i<scaled.count;i++)this.spawnCourtyardEnemy(id);}else this.spawnCourtyardEnemy(id);}if(!this.specialRetry&&this.level.pending(session.elapsed))this.trySpecialSpawn();for(const encounterId of this.reinforcements.dueEncounters(session.elapsed))this.reinforcements.attempt(session.elapsed,this.spawnCourtyardEnemy('E01',true),encounterId);}
       else if (oldSpawn) {
         if (courtyardPilot) this.spawnCourtyardEnemy();
         else this.place(this.enemies, this.nextMob % 2 ? 40 : WORLD_WIDTH - 40, ((this.nextMob * 73) % 360) / 360, 'enemy');
@@ -1348,7 +1353,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
           if(id==='EL01'||id==='B01'){
             const offset=new Phaser.Math.Vector2(bodyOf(this.cat).center).subtract(bodyOf(enemy).center),distance=offset.length(),aim=offset.normalize(),spec=ENEMIES[id];
             const oldPhase=state.phase;
-            const hpRatio=enemy.getData('hp')/spec.hp;
+            const hpRatio=enemy.getData('hp')/(__DEVTOOLS__?enemy.getData('devtoolsMaxHP'):spec.hp);
             const scatterSlots=bossScatterRounds(bossIsEnraged(state.enraged,hpRatio))*BOSS_SCATTER.angles.length;
             const intent=stepSpecial(id,state,passiveNow,aim,{dash:this.readableAttack(enemy,aim,spec.dashSpeed*spec.dashSeconds),slam:id==='B01'&&this.readableSlam(enemy),scatter:id==='B01'&&this.readableScatter(enemy)&&this.bossProjectileSlots.available>=scatterSlots},!bodyOf(enemy).blocked.none,hpRatio,passiveNow+1e-8<(enemy.getData('chill') as ChillState).frozenUntil,distance,()=>Phaser.Math.FloatBetween(0,1));
             if(state.phase==='scatter-warning'&&oldPhase!=='scatter-warning')this.bossProjectileSlots.reserve(enemy,state.scatterRounds*BOSS_SCATTER.angles.length);
@@ -1452,10 +1457,15 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
         const collected=this.pickups!.collect(this.cat);
         this.feedback?.collectXP(collected);
         if(collected>0)sound({type:'xp',at:session.elapsed,amount:collected});
+        if(__DEVTOOLS__){
+          const scaled=require('../devtools/model').scaleCount(collected,session.devtools!.settings.xpm,session.devtools!.xpCarry);session.devtools!.xpCarry=scaled.carry;
+          this.abilities?.collect(scaled.count,this.growth.snapshot().ranks);this.growth.collect(scaled.count);
+        }else {
         this.abilities?.collect(collected,this.growth.snapshot().ranks);
         this.growth.collect(collected);
+        }
         if(this.growth.snapshot().offer){
-          session.pause('upgrade');audio?.pause('upgrade');this.clearInput();pauseScene();this.observeOnboarding();emit();return;
+          enterUpgradePause();emit();return;
         }
       }
       this.observeOnboarding();
@@ -1528,16 +1538,24 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
   }
 
   const arena = new Arena();
+  function syncAfterGrowthReward():void {
+    arena.feedback?.syncHealth(session.hp,session.effectiveConfig.maxHp);
+    arena.observeOnboarding();
+    if(arena.isSlice()){arena.syncProjectileCapacity();arena.abilities?.setAreaMultiplier(areaMultiplier(session.runConfig,arena.growth!.snapshot().ranks));arena.areas?.ensure(arena.growth!.snapshot().ranks);arena.sentries?.ensure(arena.growth!.snapshot().ranks);if(session.runConfig.defenseCompanions?.enabled)arena.passives.setSpiritFrequency(companionFrequency(arena.growth!.snapshot().ranks),session.elapsed);arena.abilities?.ensure(arena.growth!.snapshot().ranks,session.elapsed);}arena.clearInput();
+  }
+  function enterUpgradePause():void {
+    session.pause('upgrade');audio?.pause('upgrade');arena.clearInput();pauseScene();arena.observeOnboarding();
+  }
   let chapterTimeline:ChapterTimeline|null=null;
   const controller: BattleController = {
     get audio(){return audio;},
     get chapterTimeline(){if(__BUILD_PROFILE__!=='playtest'||!game||disposed)return null;return chapterTimeline??(chapterTimeline=require('./chapter-timeline').createChapterTimeline(game,Phaser.Scene));},
     start(runConfig: RunConfig = makeRunConfig('CAT01', 'W01', 'diagnostic')): void { if (disposed) return; assertProjectileTraitsProfile(runConfig,__BUILD_PROFILE__);assertProjectileFlightProfile(runConfig,__BUILD_PROFILE__);assertHuntTargetingProfile(runConfig,__BUILD_PROFILE__);assertAreaAbilitiesProfile(runConfig,__BUILD_PROFILE__);assertDefenseCompanionsProfile(runConfig,__BUILD_PROFILE__);assertSustainRewardsProfile(runConfig,__BUILD_PROFILE__);assertRewardContractsProfile(runConfig,__BUILD_PROFILE__);assertMovementContractsProfile(runConfig,__BUILD_PROFILE__);audio?.pause('restart');audio?.setBossActive(false);audio?.setLocation('battle');pauseScene();
       const ordinary=sliceContent&&!runConfig.rulesVersion.startsWith('diagnostic-v1');
-      audio?.setWeapon(runConfig.weaponId);session = new Session(ordinary?courtyardRunConfig(runConfig):courtyardPilot?Object.freeze({...runConfig,rulesVersion:runConfig.rulesVersion+'-courtyard-preview'}):runConfig); renderFrames.reset(); finished = false; arena.resetEntities();if(arena.isOpening()){summaries.start(runSequence,session.runConfig.catId,session.runConfig.weaponId);onboarding.startRun();arena.syncOnboardingTimer();} running = true; resumeScene();if(audio?.snapshot().contextState!=='not-created')void audio?.continue(); emit(); },
+      audio?.setWeapon(runConfig.weaponId);if(__DEVTOOLS__){const settings=session.devtools!.settings;session=new Session(ordinary?courtyardRunConfig(runConfig):courtyardPilot?Object.freeze({...runConfig,rulesVersion:runConfig.rulesVersion+'-courtyard-preview'}):runConfig);session.devtools!.setSettings(settings);}else session=new Session(ordinary?courtyardRunConfig(runConfig):courtyardPilot?Object.freeze({...runConfig,rulesVersion:runConfig.rulesVersion+'-courtyard-preview'}):runConfig); renderFrames.reset(); finished = false; arena.resetEntities();if(arena.isOpening()){summaries.start(runSequence,session.runConfig.catId,session.runConfig.weaponId);onboarding.startRun();arena.syncOnboardingTimer();} running = true; resumeScene();if(audio?.snapshot().contextState!=='not-created')void audio?.continue(); emit(); },
     pause(reason: PauseReason): void { if (disposed || !running || session.result) return; audio?.pause(reason);session.pause(reason); arena.clearInput(); pauseScene(); if (reason === 'background') game!.loop.sleep(); emit(); },
     resume(): void { if (disposed || !running || session.result) return; arena.clearInput(); session.resume(); if (!session.isPaused) {resumeScene();if(audio?.snapshot().contextState!=='not-created')void audio?.continue();} emit(); },
-    reset(): void { if (disposed) return; audio?.pause('reset');audio?.setBossActive(false);audio?.setLocation('silent');pauseScene(); summaries.end('abandoned');running = false; session = new Session(); renderFrames.reset(); finished = false; arena.resetEntities(); game!.loop.resetDelta(); game!.loop.wake(); emit(); },
+    reset(): void { if (disposed) return; audio?.pause('reset');audio?.setBossActive(false);audio?.setLocation('silent');pauseScene(); summaries.end('abandoned');running = false; if(__DEVTOOLS__){const settings=session.devtools!.settings;session=new Session();session.devtools!.setSettings(settings);}else session = new Session(); renderFrames.reset(); finished = false; arena.resetEntities(); game!.loop.resetDelta(); game!.loop.wake(); emit(); },
     snapshot,
     dismissOnboarding():void {if(disposed)return;arena.clearOnboarding();emit();},
     skipOnboarding():void {if(disposed)return;arena.clearOnboarding();onboarding.skip();emit();},
@@ -1549,9 +1567,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
         if(recovered!==false&&arena.activeG6)arena.rewardHealing+=Math.max(0,session.hp-before);
         return recovered;
       }))return false;
-      arena.feedback?.syncHealth(session.hp,session.effectiveConfig.maxHp);
-      arena.observeOnboarding();
-      if(arena.isSlice()){arena.syncProjectileCapacity();arena.abilities?.setAreaMultiplier(areaMultiplier(session.runConfig,arena.growth.snapshot().ranks));arena.areas?.ensure(arena.growth.snapshot().ranks);arena.sentries?.ensure(arena.growth.snapshot().ranks);if(session.runConfig.defenseCompanions?.enabled)arena.passives.setSpiritFrequency(companionFrequency(arena.growth.snapshot().ranks),session.elapsed);arena.abilities?.ensure(arena.growth.snapshot().ranks,session.elapsed);}arena.clearInput();
+      syncAfterGrowthReward();
       if(!arena.growth.snapshot().offer){
         session.finishUpgrade();if(holdForFeedback)session.pause('menu');else resumeScene();
         arena.activeG6?.rewards.heal(arena.rewardHealing,centerOf(arena.cat));
@@ -1573,6 +1589,7 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
     get cssPixelsPerLogicalUnit(): number { return arena.cameras.main.zoomX / arena.scale.displayScale.x; },
     dispose(): void {
       if (disposed) return;
+      if(__DEVTOOLS__)require('../devtools/bridge').detach();
       chapterTimeline?.dispose();
       arena.interruptG6();arena.g6Art?.bells.destroy();arena.g6Art?.flight.destroy();
       arena.g6Art?.rewards.destroy();arena.g6Art?.held.destroy();arena.g6Art?.cat.destroy();
@@ -1587,6 +1604,29 @@ export async function createBattle(stage: HTMLElement, callbacks: BattleCallback
       running = false; disposed = true; unbindInputObservation(); unbindTouchCompatibility(); game?.loop.wake(); game?.destroy(true, false);
     },
   };
+  if(__DEVTOOLS__){
+    controller.devtools={
+      read(){
+        const active=running&&!disposed&&!session.result&&session.hp>0,growth=arena.growth?.snapshot();
+        const blocked=!active?'请先开始一局':growth?.offer?'请先完成当前选卡':session.reasons.some(reason=>reason==='background'||reason==='inputLost')?'请先继续游戏':null;
+        return {battle:snapshot(),settings:session.devtools!.settings,active,ordinaryCap:spawnStageAt(session.elapsed,arena.isOpening())?.cap??0,
+          rewards:growth?require('../devtools/model').devtoolsRewards(session.runConfig,growth,blocked):[]};
+      },
+      setSettings(settings){session.devtools!.setSettings(settings);emit();},
+      clearInput(){arena.clearInput();},
+      grant(id){
+        if(!running||disposed||session.result||!arena.growth||session.reasons.some(reason=>reason!=='menu'))return false;
+        if(!arena.growth.devtoolsGrant!(id,ranks=>session.applyGrowthReward(ranks)))return false;
+        syncAfterGrowthReward();emit();return true;
+      },
+      experience(amount){
+        if(!running||disposed||session.result||!arena.growth||session.reasons.some(reason=>reason==='background'||reason==='inputLost'))return false;
+        arena.growth.collect(amount);
+        if(arena.growth.snapshot().offer){session.resume();enterUpgradePause();}
+        emit();return true;
+      },
+    };
+  }
   const bootTimeout = window.setTimeout(() => rejectReady(new Error('战斗场景初始化超时。')), 8000);
   const unbindTouchCompatibility = bindCanvasTouchCompatibility(stage, __TEST_INPUT_DIAGNOSTICS__?callbacks.onTouchInput:undefined);
   const unbindInputObservation = __TEST_INPUT_DIAGNOSTICS__&&callbacks.onBattleInput

@@ -9,7 +9,7 @@ const root=path.resolve(process.env.FORTRESS_CHECK_DIR||'../.local/checks/fortre
 const file=path.join(root,'companion-rules.mjs'),d2File=path.resolve('../.local/checks/companion-pilot-20261104/companion-rules.mjs');
 if(file===d2File)throw Error('D3 output must not overwrite the frozen D2 rules; select an independent FORTRESS_CHECK_DIR');
 mkdirSync(root,{recursive:true});
-const result=await build({stdin:{contents:"export * from './src/progression';export * from './src/combat-config';export * from './src/level-config';export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file,metafile:true});
+const result=await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression';export * from './src/combat-config';export * from './src/level-config';export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file,metafile:true});
 const R=await import(pathToFileURL(file));
 const priorFile=path.resolve('../.local/checks/g4c-normal-pool-20261104/admission/admission-rules.mjs'),P=await import(pathToFileURL(priorFile));
 const D2=await import(pathToFileURL(d2File));

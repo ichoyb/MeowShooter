@@ -1,3 +1,5 @@
+// Code guarded by __DEVTOOLS__ serves the local developer tools only; official builds compile it out.
+declare const __DEVTOOLS__:boolean;
 import type {RunConfig} from './combat-config';
 import type {Point} from './rules';
 import {GROWTH_NUMBERS as N,PICKUP,growthNumbers,type GrowthRanks} from './progression-content';
@@ -5,8 +7,14 @@ import {contractMultipliers,stanceMultiplier,type MovementContext} from './contr
 export const skillMultiplier=(base:RunConfig,ranks:GrowthRanks):number=>1+(base.areaAbilities?.enabled ? .25*(ranks.A07??0) : 0);
 export const areaMultiplier=(base:RunConfig,ranks:GrowthRanks):number=>1+(base.areaAbilities?.enabled ? .05*(ranks.A08??0) : 0);
 export const pickupMagnetRadius=(base:RunConfig,ranks:GrowthRanks):number=>PICKUP.magnetRadius*(1+(base.areaAbilities?.enabled ? .1*(ranks.A10??0) : 0));
-export const abilityDamage=(base:RunConfig,ranks:GrowthRanks,context?:MovementContext):number=>12*(1+growthNumbers(base.growthTuning?.attributePlan).damage*ranks.L1_DAMAGE)*skillMultiplier(base,ranks)*contractMultipliers(base,ranks).skill*stanceMultiplier(base,ranks,context);
-export const nativeSpiritDamage=(base:RunConfig,ranks:GrowthRanks,context?:MovementContext):number=>base.spirit.damage*skillMultiplier(base,ranks)*contractMultipliers(base,ranks).skill*stanceMultiplier(base,ranks,context);
+export const abilityDamage=(base:RunConfig,ranks:GrowthRanks,context?:MovementContext):number=>{
+ const damage=12*(1+growthNumbers(base.growthTuning?.attributePlan).damage*ranks.L1_DAMAGE)*skillMultiplier(base,ranks)*contractMultipliers(base,ranks).skill*stanceMultiplier(base,ranks,context);
+ return __DEVTOOLS__?damage*(context?.devtoolsDamage??1):damage;
+};
+export const nativeSpiritDamage=(base:RunConfig,ranks:GrowthRanks,context?:MovementContext):number=>{
+ const damage=base.spirit.damage*skillMultiplier(base,ranks)*contractMultipliers(base,ranks).skill*stanceMultiplier(base,ranks,context);
+ return __DEVTOOLS__?damage*(context?.devtoolsDamage??1):damage;
+};
 export function areaAttributeEligible(id:'A07'|'A08',base:RunConfig,ranks:GrowthRanks):boolean {
  if(!base.areaAbilities?.enabled)return false;
  const actual=['L1_TRAIL_BELL','L1_ORBIT_BELL','C15','C16'] as const;

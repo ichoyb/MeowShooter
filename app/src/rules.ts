@@ -1,3 +1,7 @@
+import type {DevtoolsSession} from '../devtools/model';
+// Code guarded by __DEVTOOLS__ serves the local developer tools only; official builds compile it out.
+declare const __DEVTOOLS__:boolean;
+declare function require(path:string):any;
 import { makeRunConfig, type RunConfig } from './combat-config';
 import {deriveGrowthConfig,GROWTH_NUMBERS as N,type GrowthRanks} from './progression';
 import {DEFENSE_NUMBERS,armorPoints,armorMultiplier,shieldCapacity,shieldRecovery,type IncomingDamageFact,type DefenseSnapshot} from './player-defense-rules';
@@ -13,6 +17,7 @@ export type PauseReason = 'menu' | 'upgrade' | 'background' | 'inputLost';
 export type AimProvider = () => Point | null;
 export type FiredVolley = Point & { id: number; primaryMultiplier?: number };
 export class Session {
+  declare devtools?:DevtoolsSession;
   ammo: number; reloadLeft = 0; elapsed = 0; hp: number; shots = 0; reloadCompletions = 0;
   result: 'death' | 'survived' | 'cleared' | 'timeout' | null = null;
   private cooldown = 0;
@@ -32,11 +37,12 @@ export class Session {
   constructor(readonly runConfig: RunConfig = makeRunConfig('CAT01', 'W01', 'diagnostic')) {
     this.effectiveConfig=runConfig; this.ammo = runConfig.weapon.ammoCapacity; this.hp = runConfig.maxHp;
     this.openingPowerRemaining = runConfig.openingPower?.volleys ?? 0;
+    if(__DEVTOOLS__)this.devtools={settings:require('../devtools/model').DEVTOOLS_DEFAULTS,spawnCarry:0,xpCarry:0,setSettings:settings=>{this.devtools!.settings={...settings};this.applyGrowth(this.growthRanks);}};
   }
   applyGrowth(ranks: GrowthRanks): void {
     if(this.result)return;
     if(this.runConfig.movementContracts?.enabled&&ranks.R07&&!this.growthRanks.R07)this.stationarySince=this.moving?null:this.elapsed;
-    const previous=this.effectiveConfig,next=deriveGrowthConfig(this.runConfig,ranks,this.movementContext());
+    const previous=this.effectiveConfig,next=__DEVTOOLS__?require('../devtools/model').scaleWeaponDamage(deriveGrowthConfig(this.runConfig,ranks,this.movementContext()),this.devtools!.settings.dmg):deriveGrowthConfig(this.runConfig,ranks,this.movementContext());
     this.growthRanks={...ranks};
     this.cooldown*=next.weapon.intervalSeconds/previous.weapon.intervalSeconds;
     this.reloadLeft*=next.weapon.reloadSeconds/previous.weapon.reloadSeconds;
@@ -62,11 +68,13 @@ export class Session {
     if(moving)this.stationarySince=null;
     else if(this.moving)this.stationarySince=this.elapsed;
     this.moving=moving;
-    const damage=deriveGrowthConfig(this.runConfig,ranks,this.movementContext()).weapon.damage;
+    const damage=__DEVTOOLS__?deriveGrowthConfig(this.runConfig,ranks,this.movementContext()).weapon.damage*this.devtools!.settings.dmg:deriveGrowthConfig(this.runConfig,ranks,this.movementContext()).weapon.damage;
     if(damage!==this.effectiveConfig.weapon.damage)this.effectiveConfig=Object.freeze({...this.effectiveConfig,weapon:Object.freeze({...this.effectiveConfig.weapon,damage})});
   }
   movementContext():MovementContext {
-    return {moving:this.moving,stationarySeconds:this.stationarySince===null?0:Math.max(0,this.elapsed-this.stationarySince)};
+    const context={moving:this.moving,stationarySeconds:this.stationarySince===null?0:Math.max(0,this.elapsed-this.stationarySince)};
+    if(__DEVTOOLS__)return {...context,devtoolsDamage:this.devtools!.settings.dmg};
+    return context;
   }
   contractSnapshot(){return {enabled:!!this.runConfig.movementContracts?.enabled,...this.movementContext(),stationarySince:this.stationarySince,stance:stanceMultiplier(this.runConfig,this.growthRanks,this.movementContext())};}
   applyGrowthReward(ranks:GrowthRanks,recoveryFraction=0):number|false {
@@ -133,6 +141,7 @@ export class Session {
   completeBoss():void {if(!this.isPaused&&!this.result&&this.hp>0&&this.runConfig.endCondition==='boss')this.finish('cleared');}
   damage(amount: number): IncomingDamageFact {
     const rejected:IncomingDamageFact={accepted:false,rawDamage:amount,afterArmor:0,shieldAbsorbed:0,hpLost:0,shieldBroke:false};
+    if(__DEVTOOLS__&&this.devtools!.settings.inv)return rejected;
     if(this.isPaused||this.result||this.hp<=0||!Number.isFinite(amount)||amount<=0)return rejected;
     const afterArmor=amount*armorMultiplier(this.armorRank),shieldBefore=this.shield;
     const shieldAbsorbed=Math.min(shieldBefore,afterArmor),hpBefore=this.hp;

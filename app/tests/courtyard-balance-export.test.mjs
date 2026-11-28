@@ -5,7 +5,7 @@ import { build } from 'esbuild';
 
 const cats=['CAT01','CAT02','CAT03'];
 async function readBalance(plugins=[]){
- const {outputFiles:[bundle],metafile}=await build({entryPoints:['tools/courtyard-balance-data.ts'],
+ const {outputFiles:[bundle],metafile}=await build({define:{__DEVTOOLS__:'false'},entryPoints:['tools/courtyard-balance-data.ts'],
   bundle:true,platform:'node',format:'esm',write:false,metafile:true,plugins});
  assert(!Object.keys(metafile.inputs).some(name=>/phaser-entry|node_modules\/phaser|src\/battle\.ts$/.test(name)));
  const {readCourtyardBalance}=await import('data:text/javascript;base64,'+Buffer.from(bundle.contents).toString('base64'));

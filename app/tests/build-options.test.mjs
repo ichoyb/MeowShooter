@@ -14,6 +14,7 @@ test('production and fixtures share options without importing a build side effec
     });
     assert.equal(existsSync(dist), false, 'creating options must not build a dist');
     assert.equal(adapted.length, 0);
+    assert.equal(buildOptions.define.__DEVTOOLS__, 'false');
     assert.equal(buildOptions.define.__BUILD_PROFILE__, JSON.stringify(profile));
     assert.equal(buildOptions.define.__COURTYARD_ENABLED__, String(profile === 'playtest'));
     assert.equal(buildOptions.define.__COMBAT_SLICE_ENABLED__, String(profile === 'playtest'));

@@ -37,6 +37,7 @@
 - 基于 Phaser 3 与 TypeScript：战斗在 Phaser Canvas 中运行，使用 Arcade 物理；页面和弹层用 DOM/CSS。
 - 音乐和音效全部由代码乐谱在运行时合成，游戏包里没有音频文件。
 - 面向小红书离线小工具：图片以 WebP 为主，离线包控制在 3.5 MiB 以内。
+- `app/devtools/` 是本机调试用的开发者测试工具，不在游戏包里。
 
 ## 版权
 

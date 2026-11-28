@@ -25,7 +25,7 @@ function scan(file, text) {
   if(/Content-Security-Policy/i.test(text))errors.push('Container manages CSP; remove HTML CSP');
   for(const m of text.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)) { if(!m[1].startsWith('./')||!statSafe(path.join(root,m[1])))errors.push('Missing/non-relative resource: '+m[1]); }
  }
- if(file.endsWith('.css')&&/(?:url\(\s*["']?https?:|\bgap\s*:|\baspect-ratio\s*:|\bclamp\(|\binset\s*:|\d+dvh|:has\()/i.test(text))errors.push('CSS baseline violation');
+ if(file.endsWith('.css')&&/(?:url\(\s*["']?https?:|(?<![-\w])(?:gap|row-gap|column-gap|grid-gap|grid-column-gap|grid-row-gap|aspect-ratio|inset)\s*:|\bclamp\(|\d+dvh|:has\()/i.test(text))errors.push('CSS baseline violation');
  for(const m of text.matchAll(/data:[^,;]+;base64,([A-Za-z0-9+/=]+)/g))if(Buffer.from(m[1],'base64').length>1024*1024)errors.push('Large Base64');
 }
 function statSafe(file){try{return statSync(file).isFile();}catch{return false;}}

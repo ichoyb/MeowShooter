@@ -6,7 +6,7 @@ const Clock=require('phaser/src/time/Clock');
 const EventEmitter=require('phaser/src/events/EventEmitter');
 const DataManager=require('phaser/src/data/DataManager');
 const compiled={exports:{}};
-vm.runInNewContext(buildSync({entryPoints:[require('node:path').join(__dirname,'../src/sentinel-abilities.ts')],bundle:true,platform:'node',format:'cjs',write:false}).outputFiles[0].text,{module:compiled,exports:compiled.exports});
+vm.runInNewContext(buildSync({define:{__DEVTOOLS__:'false'},entryPoints:[require('node:path').join(__dirname,'../src/sentinel-abilities.ts')],bundle:true,platform:'node',format:'cjs',write:false}).outputFiles[0].text,{module:compiled,exports:compiled.exports});
 const {SentinelAbilities}=compiled.exports;
 // Native Clock and DataManager run unchanged. Only drawing and Group collection
 // calls use Node adapters: browser Scene coverage separately checks real Graphics.

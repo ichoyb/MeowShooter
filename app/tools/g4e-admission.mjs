@@ -7,7 +7,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 const out=path.resolve(process.env.G4E_ADMISSION_DIR||'../.local/checks/normal50-admission-20261105/admission');mkdirSync(out,{recursive:true});
 const file=path.join(out,'admission-rules.mjs');
-await build({stdin:{contents:"export * from './src/progression';export * from './src/combat-config';export * from './src/level-config';export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
+await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression';export * from './src/combat-config';export * from './src/level-config';export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
 const R=await import(pathToFileURL(file)),sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex');
 const runnerSHA256=sha(new URL(import.meta.url)),zero={L1_DAMAGE:0,L1_RATE:0,L1_HEART:0},pairs=[['CAT01','W01'],['CAT02','W04'],['CAT03','W02']],newIDs=['C21','M10','R04','R05','R06','R07'];
 const checkpoints=[[60,38],[150,138],[180,196],[240,310],[300,446],[330,535],[450,893],[600,1266]];

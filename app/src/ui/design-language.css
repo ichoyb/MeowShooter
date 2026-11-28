@@ -1,0 +1,790 @@
+/* Shared visual roles over the existing UI layout and action bindings. */
+@font-face {
+  font-family: "Resource Han Rounded CN";
+  src: url("./ui/ResourceHanRoundedCN-Heavy.woff2") format("woff2");
+  font-weight: 900;
+  font-display: block;
+}
+
+#app {
+  --court-ink: var(--vl-text-primary);
+  --court-cream: var(--vl-surface-raised);
+  --court-line: var(--vl-outline);
+  --court-shadow: var(--vl-shade-18);
+  --court-mint: var(--vl-chip-benefit);
+  --ui-panel-shadow: inset 0 calc(-1 * var(--vl-lip-panel)) 0 var(--vl-surface-lip),
+    inset 0 0 0 var(--vl-outline-panel) var(--vl-surface-raised), var(--vl-shadow-ground);
+  --ui-selected-ring: 0 0 0 var(--vl-lip-s) var(--vl-state-selected);
+  color: var(--vl-text-primary);
+  font-family: var(--vl-font-body);
+}
+body { background: var(--vl-ink-900); }
+#startup-content, #app .screen { color: var(--vl-text-primary); }
+#app #startup-content { background: var(--vl-surface-page); color: var(--vl-text-primary); }
+#app #startup-content small { color: var(--vl-text-secondary); }
+#app .screen.courtyard-ui { background: var(--vl-surface-page); }
+#app .courtyard-ui::before {
+  clip-path: none;
+  background: linear-gradient(var(--vl-surface-raised), var(--vl-surface-page));
+}
+#app .courtyard-ui::after { display: none; }
+
+/* Display roles. Long information and live hints use the system body face. */
+#app h1, #app h2, #app h3, #app .btn, #app .r1-start, #app .r1-select-action,
+#app .r1-home-links button, #app .r1-select-copy strong, #app .r1-level-caption,
+#app .court-select-copy strong, #app .court-select-weapon strong, #app .court-select-state,
+#app .court-reward-title strong, #app .court-build-title strong,
+#app .court-card-detail, #app .court-reward-detail, #app .court-badge,
+#app .court-result-stats strong, #app .court-result-pair > strong, #app .run-objective,
+#app #health, #app #level, #app #timer, #app #ammo {
+  font-family: var(--vl-font-display);
+  font-weight: var(--vl-font-display-weight);
+}
+#app h1, #app h2, #app h3 { color: var(--vl-text-primary); }
+#app h1 { font-size: var(--vl-type-display-xl-size); line-height: var(--vl-type-display-xl-line-height); }
+#app h2 { font-size: var(--vl-type-display-m-size); line-height: var(--vl-type-display-m-line-height); }
+#app h3 { font-size: var(--vl-type-display-s-size); line-height: var(--vl-type-display-s-line-height); }
+#app .court-page-head > p, #app .court-select-footer > p, #app .court-session-copy,
+#app .court-session-note, #app .court-pause-copy, #app .court-end-copy,
+#app .court-result-heading p, #app .court-result-stats span, #app .court-reward-hint,
+#app .court-reward-route, #app .court-reward-state, #app .court-reward-title small,
+#app .court-book-note, #app .court-book-hint, #app .court-detail-section p,
+#app .r1-home-note, #app .n1-home-reason, #app .r1-select-copy > span,
+#app .run-summary-meta, #app .run-summary-privacy, #app .run-summary-grid span,
+#app .court-volume { color: var(--vl-text-secondary); }
+
+/* Raised controls share one face, lip and press treatment. */
+#app .btn, #app .r1-start, #app .r1-round, #app .r1-home-links button,
+#app .court-reward-detail, #app .court-card-detail, #app .run-summary-entry,
+#app .court-select-weapon {
+  --ui-top: var(--vl-action-neutral-top);
+  --ui-face: var(--vl-action-neutral-base);
+  --ui-lip: var(--vl-action-neutral-lip);
+  --ui-depth: var(--vl-lip-m);
+  min-height: var(--vl-touch-min);
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-l);
+  color: var(--vl-text-primary);
+  background: linear-gradient(var(--ui-top), var(--ui-face) 62%);
+  box-shadow: inset 0 calc(-1 * var(--ui-depth)) 0 var(--ui-lip),
+    var(--vl-shadow-highlight), var(--vl-shadow-ground);
+  text-shadow: none;
+  font-size: var(--vl-type-display-s-size);
+  transition: box-shadow var(--vl-motion-release-duration) var(--vl-motion-release-easing);
+}
+#app .btn:active, #app .r1-start:active, #app .r1-round:active, #app .r1-home-links button:active,
+#app .court-reward-detail:active, #app .court-card-detail:active, #app .run-summary-entry:active,
+#app .court-select-weapon:active {
+  box-shadow: inset 0 calc(-1 * var(--vl-outline-badge)) 0 var(--ui-lip), var(--vl-shadow-pressed);
+  transition-duration: var(--vl-motion-press-duration);
+  transition-timing-function: var(--vl-motion-press-easing);
+}
+#app button:focus-visible, #app input:focus-visible, #app select:focus-visible {
+  outline: var(--vl-outline-badge) solid var(--vl-action-primary-lip);
+  outline-offset: var(--vl-outline-badge);
+}
+#app .court-select-cat:focus:not(:focus-visible),
+#app .court-reward-choice:focus:not(:focus-visible),
+#app .court-reward-detail:focus:not(:focus-visible) { outline: none; }
+#app .btn.primary, #app .btn.n1-primary, #app .court-button.is-gold, #app .r1-start {
+  --ui-top: var(--vl-action-primary-top);
+  --ui-face: var(--vl-action-primary-base);
+  --ui-lip: var(--vl-action-primary-lip);
+  --ui-depth: var(--vl-lip-l);
+  color: var(--vl-text-on-action);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-s-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+}
+#app .btn.danger, #app .court-end [data-action="confirm-end"] {
+  --ui-top: var(--vl-action-danger-top);
+  --ui-face: var(--vl-action-danger-base);
+  --ui-lip: var(--vl-action-danger-lip);
+  color: var(--vl-text-on-action);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-s-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+}
+#app .btn:disabled, #app .r1-start:disabled {
+  --ui-top: var(--vl-action-disabled-base);
+  --ui-face: var(--vl-action-disabled-base);
+  --ui-lip: var(--vl-action-disabled-lip);
+  color: var(--vl-ink-600);
+  opacity: 1;
+  -webkit-text-stroke: 0;
+}
+#app .r1-round, #app .close-button, #app .court-head-row > .court-button {
+  --ui-depth: var(--vl-lip-s);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--vl-touch-min);
+  height: var(--vl-touch-min);
+  padding: 0 0 var(--vl-lip-s);
+  border-radius: var(--vl-radius-pill);
+}
+#app .close-button, #app .court-head-row > .court-button { font-size: var(--vl-type-display-l-size); }
+#app .court-pause footer > .is-quiet, #app .run-tutorial-skip {
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--vl-coral-700);
+}
+#app .btn.n1-quiet {
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--vl-text-primary);
+}
+
+/* Scrims and layered panels use the same frame at every entry point. */
+#app .overlay { color: var(--vl-text-primary); background: var(--vl-scrim); }
+#app #modal .panel, #app #error .panel, #app .run-onboarding, #app .court-result-summary .court-card-surface {
+  border: var(--vl-outline-panel) solid var(--vl-outline);
+  border-radius: var(--vl-radius-l);
+  background: var(--vl-surface-panel);
+  box-shadow: var(--ui-panel-shadow);
+  clip-path: none;
+}
+#app #modal .panel::before { display: none; }
+#app .court-card::before { display: none; }
+#app .court-card-surface, #app .r1-pair, #app .court-select-cat {
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-l);
+  background: var(--vl-surface-raised);
+  box-shadow: var(--ui-panel-shadow);
+  clip-path: none;
+}
+#app .court-card-surface { padding: 0; }
+#app .court-card-inner {
+  border-radius: inherit;
+  background: transparent;
+  clip-path: none;
+}
+#app .court-select-cat[aria-pressed="true"], #app .court-card.is-selected .court-card-surface {
+  background: var(--vl-surface-page);
+  box-shadow: var(--ui-selected-ring), var(--ui-panel-shadow);
+}
+#app .court-card.is-selected .court-card-inner { background: transparent; }
+#app .court-select-cat[aria-pressed="true"]::after,
+#app .court-reward-card.is-selected::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: calc(-1 * var(--vl-space-2));
+  right: calc(-1 * var(--vl-space-2));
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-state-selected) var(--ui-check) center / var(--vl-space-4) no-repeat;
+  pointer-events: none;
+}
+#app .court-select-cat:disabled {
+  color: var(--vl-text-secondary);
+  background: var(--vl-action-disabled-base);
+}
+#app .court-select-cat:disabled .loadout-portrait { filter: grayscale(1); opacity: .6; }
+#app .court-select-state, #app .court-badge {
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface-raised);
+  color: var(--vl-text-primary);
+  box-shadow: none;
+}
+#app .court-select-state, #app .court-badge.is-selected { background: var(--vl-state-selected); }
+#app .court-select-state.is-preview { background: var(--vl-surface-inset); }
+#app .court-select-state.is-preview::before { display: none; }
+#app .court-badge.is-elite, #app .court-badge.is-locked { background: var(--vl-chip-cost); }
+#app .court-notice, #app .notice, #app .run-summary-grid > div, #app .n1-receipt-benefit {
+  background: var(--vl-chip-info);
+  color: var(--vl-text-primary);
+  border-color: transparent;
+  border-radius: var(--vl-radius-m);
+}
+#app .court-notice.is-error, #app .notice.danger { background: var(--vl-chip-cost); color: var(--vl-text-primary); }
+#app .court-notice.is-success, #app .notice.mint { background: var(--vl-chip-benefit); }
+#app .court-stat, #app .court-growth-route, #app .court-setting,
+#app .court-detail-section, #app .court-result-pair, #app .court-result-stats > div + div {
+  border-color: var(--vl-surface-lip);
+}
+#app .court-stat, #app .court-quality select, #app .field select { background: var(--vl-surface-raised); color: var(--vl-text-primary); }
+#app .court-book-row, #app .court-weapon-portrait, #app .court-detail-hero,
+#app .court-growth-section, #app .run-summary-grid strong,
+#app .run-summary-milestones strong { color: var(--vl-text-primary); }
+#app .court-portrait, #app .court-weapon-portrait, #app .court-detail-weapon {
+  border-radius: var(--vl-radius-m);
+  background-color: var(--vl-surface-inset);
+}
+#app .run-summary-milestones, #app .run-summary-milestones > div { border-color: var(--vl-surface-lip); }
+#app .court-tabs, #app .run-summary-tabs {
+  padding: var(--vl-space-1);
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-m);
+  background: var(--vl-surface-inset);
+}
+#app .court-tabs > .btn, #app .run-summary-tabs > .btn,
+#app .court-setting-head > .btn { border-radius: var(--vl-radius-s); box-shadow: none; }
+#app .court-tabs > .btn[aria-pressed="true"], #app .run-summary-tabs > .btn[aria-pressed="true"],
+#app .court-setting-head > .btn[aria-pressed="true"] {
+  --ui-top: var(--vl-action-primary-top);
+  --ui-face: var(--vl-state-selected);
+}
+#app .court-volume input::-webkit-slider-runnable-track { background: var(--vl-surface-inset); border: 1px solid var(--vl-outline); }
+#app .court-volume input::-webkit-slider-thumb { border: var(--vl-outline-badge) solid var(--vl-outline); background: var(--vl-state-selected); }
+#app .court-volume input::-moz-range-track { background: var(--vl-surface-inset); border: 1px solid var(--vl-outline); }
+#app .court-volume input::-moz-range-thumb { border: var(--vl-outline-badge) solid var(--vl-outline); background: var(--vl-state-selected); }
+#app .court-volume input::-moz-range-progress { background: var(--vl-state-selected); }
+
+/* Home and selection retain the existing cards, actions and scene plate. */
+#app.r1-home-shell, #app .r1-home.screen { background: var(--vl-surface-page); }
+#app .r1-home::before { background: linear-gradient(var(--vl-sky-200) 28%, var(--vl-surface-page) 72%); }
+#app .r1-home-scene::before {
+  background: linear-gradient(var(--vl-sky-200), transparent);
+  height: var(--vl-control-m);
+}
+#app .r1-home-tools { margin-left: var(--vl-space-4); margin-right: var(--vl-space-4); }
+#app .r1-round svg { visibility: hidden; }
+#app .r1-round::before {
+  content: "";
+  position: absolute;
+  top: var(--vl-space-2);
+  left: var(--vl-space-2);
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  background: var(--ui-gear) center / contain no-repeat;
+  pointer-events: none;
+}
+#app #home-audio::before { background-image: var(--ui-sound); }
+#app #home-audio[data-muted="true"]::before { background-image: var(--ui-mute); }
+#app .r1-home-title, #app .court-result-heading h1 {
+  color: var(--vl-white);
+  font-size: var(--vl-type-display-hero-size);
+  line-height: var(--vl-type-display-hero-line-height);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-hero-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+  text-shadow: var(--vl-shadow-text-drop);
+}
+#app .r1-home-title {
+  width: auto;
+  margin: var(--vl-space-3) auto 0;
+  letter-spacing: 0;
+  transform: none;
+  white-space: nowrap;
+}
+#app .r1-home-title br { display: none; }
+#app .r1-home-title span { font-size: inherit; }
+#app .r1-home-title::before, #app .r1-home-title::after {
+  content: "";
+  display: inline-block;
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  background: var(--ui-sprig) center / contain no-repeat;
+  vertical-align: middle;
+}
+#app .r1-home-title::after { transform: scaleX(-1); }
+#app .r1-home > .scroll > .r1-home-scene { background-position: center bottom; }
+#app .r1-home-cat { top: 5%; bottom: 12%; left: 12%; right: 12%; }
+#app .r1-home-cat .cat-art { max-height: 330px; }
+#app .r1-pair {
+  width: calc(100% - 2 * var(--vl-space-4));
+  margin: 0 auto;
+  background: var(--vl-surface-panel);
+  color: var(--vl-text-primary);
+}
+#app .r1-pair:active { box-shadow: var(--vl-shadow-pressed); }
+#app .loadout-portrait {
+  background: var(--vl-surface-inset);
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-m);
+  box-shadow: var(--vl-shadow-tile-lip);
+}
+#app .r1-pair .loadout-portrait { box-shadow: var(--ui-selected-ring), var(--vl-shadow-tile-lip); }
+#app .loadout-portrait .avatar { width: 148%; height: 148%; left: -24%; top: -11%; }
+#app .r1-select-copy strong, #app .court-select-copy strong { font-size: var(--vl-type-display-m-size); }
+#app .r1-select-action {
+  margin-left: var(--vl-space-2);
+  padding: var(--vl-space-1) var(--vl-space-2) var(--vl-space-2);
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-m);
+  background: linear-gradient(var(--vl-action-secondary-top), var(--vl-action-secondary-base));
+  box-shadow: inset 0 calc(-1 * var(--vl-lip-s)) 0 var(--vl-action-secondary-lip), var(--vl-shadow-highlight);
+  color: var(--vl-white);
+  font-size: var(--vl-type-display-s-size);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-s-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+}
+#app .r1-level-caption, #app .run-objective {
+  position: relative;
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--vl-space-6));
+  padding: var(--vl-space-1) var(--vl-space-3);
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface-raised);
+  box-shadow: var(--vl-shadow-ground);
+  color: var(--vl-text-primary);
+  letter-spacing: 0;
+  font-size: var(--vl-type-display-s-size) !important;
+  line-height: var(--vl-type-display-s-line-height);
+}
+#app .r1-level-caption::before, #app .r1-level-caption::after,
+#app .run-objective::before, #app .run-objective::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(-1 * var(--vl-space-6));
+  width: var(--vl-space-6);
+  height: var(--vl-space-5);
+  background: var(--ui-sprig) center / contain no-repeat;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+#app .r1-level-caption::after, #app .run-objective::after {
+  left: auto;
+  right: calc(-1 * var(--vl-space-6));
+  transform: translateY(-50%) scaleX(-1);
+}
+#app .r1-level-caption span {
+  flex: none;
+  width: var(--vl-space-4);
+  height: var(--vl-space-4);
+  margin: 0 var(--vl-space-1);
+  color: transparent;
+  font-size: 0;
+  background: var(--ui-paw) center / contain no-repeat;
+}
+#app .r1-home > footer {
+  padding: var(--vl-space-2) var(--vl-space-4) var(--vl-space-3);
+  background: var(--vl-surface-page);
+}
+#app .r1-start {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  min-height: var(--vl-control-l);
+  margin: 0 auto;
+  padding: var(--vl-space-2) var(--vl-space-3) var(--vl-space-3);
+  font-size: var(--vl-type-display-l-size);
+  -webkit-text-stroke-width: calc(2 * var(--vl-type-display-l-outline));
+  letter-spacing: 0;
+}
+#app .r1-start > span { margin-left: var(--vl-space-2); font-size: var(--vl-type-display-s-size); }
+#app .r1-start::before, #app .r1-start::after {
+  content: "";
+  position: absolute;
+  top: var(--vl-space-3);
+  left: calc(-1 * var(--vl-space-8));
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  background: var(--ui-burst) center / contain no-repeat;
+  pointer-events: none;
+}
+#app .r1-start::after { left: auto; right: calc(-1 * var(--vl-space-8)); transform: scaleX(-1); }
+#app .r1-home-links { display: flex; margin-top: var(--vl-space-3); }
+#app .r1-home-links button, #app .r1-home-links .n1-replay {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--vl-control-l);
+  margin: 0;
+  padding: var(--vl-space-1) var(--vl-space-1) var(--vl-space-2);
+}
+#app .r1-home-links button + button { margin-left: var(--vl-space-2); }
+#app .r1-home-links button svg { display: none; }
+#app .r1-home-links button::before {
+  content: "";
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  background: var(--ui-replay) center / contain no-repeat;
+  margin-bottom: var(--vl-space-1);
+}
+#app .r1-home-links [data-action="book"]::before { background-image: var(--ui-book); }
+#app .r1-home-links [data-action="help"]::before { background-image: var(--ui-help); }
+#app .courtyard-selection.courtyard-ui {
+  padding-left: var(--vl-space-4);
+  padding-right: var(--vl-space-4);
+  background: linear-gradient(var(--vl-surface-page), var(--vl-surface-panel) 48%);
+}
+#app .courtyard-selection::before { background: none; }
+#app .court-select-list { padding: var(--vl-space-1) var(--vl-space-2) 0; }
+#app .court-select-cat { padding-bottom: calc(var(--vl-space-2) + var(--vl-lip-panel)); color: var(--vl-text-primary); }
+#app .court-select-copy > span { color: var(--vl-text-secondary); }
+#app .court-select-copy small, #app .court-fixed-weapon {
+  align-self: flex-start;
+  margin-top: var(--vl-space-1);
+  padding: 0 var(--vl-space-2);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-chip-info);
+  color: var(--vl-text-primary);
+}
+#app .court-select-weapon { font-size: var(--vl-type-display-s-size); }
+#app .court-select-weapon span { color: var(--vl-text-primary); }
+#app .court-quality select, #app .field select {
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-s);
+}
+#app .court-select-footer .court-button { flex: 1; min-height: var(--vl-control-m); font-size: var(--vl-type-display-m-size); }
+
+/* HUD geometry is independent of the full-bleed battle canvas. */
+#app #hud.r1-hud { color: var(--vl-text-primary); }
+#app .r1-hud-top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+#app .r1-hud-top > * + * { margin-left: var(--vl-space-2); }
+#app .r1-life {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: var(--vl-space-6);
+  padding: 0 var(--vl-space-1);
+  border: 0;
+  background: transparent;
+}
+#app .r1-life > span, #app #hud.r1-hud #health {
+  float: none;
+  position: relative;
+  z-index: 1;
+  color: var(--vl-white);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-s-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+  font-size: var(--vl-type-display-s-size);
+  white-space: nowrap;
+}
+#app .r1-life > span::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--vl-space-6));
+  top: 50%;
+  width: var(--vl-space-5);
+  height: var(--vl-space-5);
+  background: var(--ui-heart) center / contain no-repeat;
+  transform: translateY(-50%);
+}
+#app .r1-life > span { margin-left: var(--vl-space-5); margin-right: var(--vl-space-1); }
+#app #hud.r1-hud .meter {
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface-inset);
+  box-shadow: var(--vl-shadow-ground);
+}
+#app #hud.r1-hud .hp-meter { position: absolute; z-index: 0; top: 0; right: 0; bottom: 0; left: 0; height: auto; margin: 0; }
+#app #hud.r1-hud .hp-meter i, #app #hud.r1-hud .boss-line i {
+  background: linear-gradient(var(--vl-coral-400), var(--vl-hud-hp));
+  box-shadow: var(--vl-shadow-fill-highlight);
+}
+#app #hud.r1-hud .hp-trail { background: var(--vl-honey-300); }
+#app #hud.r1-hud #timer, #app #hud.r1-hud #ammo {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--vl-space-1) var(--vl-space-2);
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  background: var(--vl-surface-raised);
+  box-shadow: var(--vl-shadow-ground);
+  color: var(--vl-text-primary);
+  font-size: var(--vl-type-display-m-size);
+  line-height: var(--vl-type-display-m-line-height);
+  font-variant-numeric: tabular-nums;
+}
+#app #hud.r1-hud #timer::before, #app #hud.r1-hud #ammo::before {
+  content: "";
+  display: block;
+  width: var(--vl-space-5);
+  height: var(--vl-space-5);
+  margin-right: var(--vl-space-1);
+  background: var(--ui-timer) center / contain no-repeat;
+}
+#app #hud.r1-hud #ammo::before { background-image: var(--ui-reload); }
+#app #hud.r1-hud #ammo { font-size: var(--vl-type-display-s-size); }
+#app #hud.r1-hud .pause-button {
+  display: grid;
+  place-items: center;
+  width: var(--vl-touch-min);
+  height: var(--vl-touch-min);
+  padding: 0 0 var(--vl-lip-s);
+  background: linear-gradient(var(--vl-action-neutral-top), var(--vl-action-neutral-base) 62%);
+  border: var(--vl-outline-control) solid var(--vl-outline);
+  border-radius: var(--vl-radius-pill);
+  box-shadow: inset 0 calc(-1 * var(--vl-lip-s)) 0 var(--vl-action-neutral-lip), var(--vl-shadow-highlight), var(--vl-shadow-ground);
+  color: var(--vl-text-primary);
+  font-size: var(--vl-type-display-m-size);
+}
+#app #hud.r1-hud #level {
+  color: var(--vl-white);
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  background: var(--vl-honey-300);
+  border-radius: var(--vl-radius-s);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-s-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+}
+#app #hud.r1-hud .exp-meter { height: var(--vl-space-4); margin: 0 var(--vl-space-2); }
+#app #hud.r1-hud .exp-meter i { background: var(--vl-hud-xp); box-shadow: var(--vl-shadow-fill-highlight); }
+#app #hud.r1-hud .boss-line, #app .r1-encounter, #app .r1-audio-error {
+  border-radius: var(--vl-radius-s);
+  background: var(--vl-surface-raised);
+  color: var(--vl-coral-700);
+}
+#app #hud.r1-hud .boss-line .meter { height: var(--vl-space-3); background: var(--vl-chip-cost); }
+#app .run-onboarding .onboarding-text { color: var(--vl-text-primary); }
+#app .onboarding-instruction p { color: var(--vl-text-secondary); }
+#app .run-onboarding:not(.is-compact) { padding-left: calc(var(--vl-space-8) + var(--vl-space-6)); }
+#app .run-onboarding:not(.is-compact)::before {
+  content: "";
+  width: var(--vl-space-8);
+  height: var(--vl-space-8);
+  position: absolute;
+  top: var(--vl-space-2);
+  left: var(--vl-space-2);
+  border-radius: var(--vl-radius-s);
+  background: var(--vl-surface-inset) var(--ui-paw) center / var(--vl-space-6) no-repeat;
+  pointer-events: none;
+}
+
+/* Picks and pause use the live content and the existing scroll containers. */
+#app #modal.courtyard-growth .panel, #app #modal.court-pause .panel {
+  padding-top: var(--vl-space-5);
+  margin-top: var(--vl-space-4);
+}
+#app #modal.courtyard-growth .modal-head, #app #modal.court-pause .modal-head {
+  justify-content: center;
+  text-align: center;
+  margin: calc(-1 * var(--vl-space-8)) 0 var(--vl-space-2);
+  border-bottom: 0;
+}
+#app #modal.courtyard-growth .modal-head h1, #app #modal.court-pause .modal-head h1 {
+  margin: 0;
+  color: var(--vl-white);
+  -webkit-text-stroke: calc(2 * var(--vl-type-display-xl-outline)) var(--vl-outline);
+  paint-order: stroke fill;
+  text-shadow: var(--vl-shadow-text-drop);
+}
+#app #modal .modal-head .close-button { position: relative; }
+#app .court-reward-card {
+  --ui-tile: var(--vl-category-attribute);
+  margin-left: var(--vl-space-1);
+  margin-right: var(--vl-space-1);
+}
+#app .court-reward-card.kind-core { --ui-tile: var(--vl-category-core); }
+#app .court-reward-card.kind-evolution { --ui-tile: var(--vl-category-evolution); }
+#app .court-reward-card.kind-attachment { --ui-tile: var(--vl-category-attachment); }
+#app .court-reward-card.kind-combination { --ui-tile: var(--vl-category-combination); }
+#app .court-reward-card.kind-tradeoff { --ui-tile: var(--vl-category-tradeoff); }
+#app .court-growth-icon {
+  background: var(--ui-tile, var(--vl-chip-info));
+  border: var(--vl-outline-badge) solid var(--vl-outline);
+  border-radius: var(--vl-radius-m);
+  box-shadow: var(--vl-shadow-tile-lip);
+}
+#app .court-reward-choice { background: transparent; color: var(--vl-text-primary); }
+#app .court-reward-title strong, #app .court-build-title strong { color: var(--vl-text-primary); font-size: var(--vl-type-display-m-size); }
+#app .court-reward-title small { color: var(--vl-text-secondary); }
+#app .court-reward-detail {
+  top: var(--vl-space-2);
+  right: var(--vl-space-2);
+  min-width: var(--vl-touch-min);
+  min-height: var(--vl-touch-min);
+  padding: 0 var(--vl-space-1) var(--vl-lip-s);
+  border-radius: var(--vl-radius-m);
+  line-height: var(--vl-type-display-s-line-height);
+}
+#app #upgrade-onboarding, #app .n1-clues {
+  border-radius: var(--vl-radius-m);
+  border-color: transparent;
+  background: var(--vl-surface-inset);
+  color: var(--vl-text-primary);
+}
+#app .courtyard-growth footer, #app .court-quality { border-color: var(--vl-surface-lip); }
+#app .court-reward-benefit, #app .court-reward-change, #app .court-reward-cost {
+  color: var(--vl-text-primary);
+  padding: 0 var(--vl-space-2);
+  border-radius: var(--vl-radius-s);
+  border: 0;
+  font-family: var(--vl-font-body);
+  font-size: var(--vl-type-caption-size);
+}
+#app .court-reward-benefit { background: var(--vl-chip-benefit); }
+#app .court-reward-change { background: var(--vl-chip-neutral); }
+#app .court-reward-cost { background: var(--vl-chip-info); }
+#app .has-actual-cost .court-reward-cost, #app .court-growth-section .court-reward-cost { background: var(--vl-chip-cost); }
+#app .court-growth-detail .court-growth-section > h3 {
+  margin: 0 0 var(--vl-space-2);
+}
+#app .court-growth-detail .court-growth-section > p {
+  margin: 0;
+  font-size: var(--vl-type-body-m-size);
+  line-height: var(--vl-type-body-m-line-height);
+}
+#app .court-growth-detail .court-growth-section > p + h3 {
+  margin-top: var(--vl-space-3);
+}
+#app .court-growth-detail .court-reward-benefit,
+#app .court-growth-detail .court-reward-cost {
+  padding: var(--vl-space-1) var(--vl-space-2);
+}
+#app .court-growth-detail .court-stat { align-items: baseline; background: transparent; }
+#app .court-growth-detail .court-stat > span { flex: 0 0 auto; max-width: none; }
+#app .court-growth-detail .court-stat > strong {
+  min-width: 0;
+  max-width: none;
+  color: var(--vl-text-primary);
+  font-size: var(--vl-type-body-m-size);
+  font-weight: var(--vl-font-body-weight);
+  line-height: var(--vl-type-body-m-line-height);
+  word-break: keep-all;
+}
+@media (max-width: 360px) {
+  #app .court-growth-detail .court-stat { display: block; }
+  #app .court-growth-detail .court-stat > strong {
+    display: block;
+    margin-top: var(--vl-space-1);
+    text-align: left;
+    word-break: normal;
+  }
+}
+#app .court-reward-rank, #app .court-reward-queue { color: var(--vl-text-secondary); }
+#app .n1-elite-line { color: var(--vl-text-primary); background: var(--vl-chip-benefit); border-color: var(--vl-surface-lip); }
+#app .n1-receipt { background: var(--vl-surface-raised); color: var(--vl-text-primary); border-color: var(--vl-outline); }
+#app .court-pause-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+#app .court-pause-actions > .court-button { min-height: var(--vl-touch-min); margin-bottom: var(--vl-space-2); }
+#app .court-pause-actions > .is-gold {
+  grid-column: 1 / -1;
+  min-height: var(--vl-control-l);
+  font-size: var(--vl-type-display-l-size);
+  -webkit-text-stroke-width: calc(2 * var(--vl-type-display-l-outline));
+}
+#app .court-pause-actions > .court-button:not(.is-gold) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 0 var(--vl-space-1);
+  padding: var(--vl-space-1) 0 var(--vl-space-2);
+  min-height: var(--vl-control-l);
+}
+#app .court-pause-actions > .court-button:not(.is-gold)::before {
+  content: "";
+  width: var(--vl-space-6);
+  height: var(--vl-space-6);
+  background: var(--ui-pause-icon, var(--ui-cards)) center / contain no-repeat;
+}
+#app .court-pause-actions [data-action="settings"] { --ui-pause-icon: var(--ui-gear); }
+#app .court-pause-actions [data-action="help"] { --ui-pause-icon: var(--ui-help); }
+#app .court-reward-spark { background: var(--vl-honey-300); box-shadow: var(--vl-shadow-glow); }
+#app .court-reward-card.is-entering {
+  animation-duration: var(--vl-motion-enter-duration);
+  animation-timing-function: var(--vl-motion-enter-easing);
+}
+#app .court-reward-card.is-picking .court-card-inner {
+  animation: a-reward-pick var(--vl-motion-pop-duration) var(--vl-motion-pop-easing);
+}
+@keyframes a-reward-pick {
+  0% { background: var(--vl-surface-panel); }
+  100% { background: transparent; }
+}
+#app .court-reward-card.is-selected .court-card-surface, #app .court-select-cat[aria-pressed="true"] {
+  transform: var(--ui-selection-transform, scale(var(--vl-motion-pop-scale)));
+  transition: transform var(--ui-selection-duration, var(--vl-motion-pop-duration)) var(--vl-motion-pop-easing);
+}
+
+/* Result keeps the actual summary, replay and exit actions. */
+#app .courtyard-result.courtyard-ui {
+  background: var(--vl-surface-page) url("./ui/garden.jpeg") center top / 100% auto no-repeat;
+}
+#app .courtyard-result::before { background: linear-gradient(var(--vl-sky-200), transparent); }
+#app .court-result-heading .court-card-surface { border: 0; background: none; box-shadow: none; }
+#app .court-result-heading h1 {
+  margin: 0;
+  font-size: var(--vl-type-display-hero-size);
+}
+#app .court-result[data-result="death"] h1, #app .court-result[data-result="timeout"] h1 { font-size: var(--vl-type-display-xl-size); }
+#app .court-result-heading p {
+  display: inline-block;
+  background: var(--vl-surface-raised);
+  border-radius: var(--vl-radius-pill);
+  padding: var(--vl-space-1) var(--vl-space-3);
+  color: var(--vl-text-primary);
+}
+#app .court-result-cat { width: 68%; height: 26vh; min-height: 118px; max-height: 275px; }
+#app .court-result-stats strong { font-size: var(--vl-type-display-l-size); }
+#app .court-result-actions { display: flex; }
+#app .court-result-actions > .court-button {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: var(--vl-space-2);
+  font-size: var(--vl-type-display-m-size);
+}
+#app .court-result-actions > .court-button + .court-button { margin-left: var(--vl-space-2); }
+#app .court-result-build, #app .run-guide { color: var(--vl-text-primary); }
+
+/* Story controls share the chrome without touching the illustrated scene. */
+#app .n1-story-heading, #app .n1-story-note, #app .n1-movie-dialogue, #app .n1-movie-address,
+#app .n1-plaque, #app .n1-movie-next, #app .n1-result-chapter {
+  border-color: var(--vl-outline);
+  color: var(--vl-text-primary);
+  background-color: var(--vl-surface-raised);
+}
+#app .n1-movie-dialogue > p { color: var(--vl-text-primary); }
+#app .n1-motion.is-ending .n1-movie-dialogue > p { color: var(--vl-surface-raised); }
+
+@media (max-height: 700px) {
+  #app .r1-home-links button { min-height: var(--vl-control-m); }
+  #app .r1-home-links button::before {
+    width: var(--vl-space-4);
+    height: var(--vl-space-4);
+  }
+  #app .r1-home-cat .cat-art { max-height: 210px; }
+  #app .courtyard-selection .court-page-head { margin-bottom: var(--vl-space-2); }
+  #app .court-select-cat { min-height: 76px; margin-bottom: var(--vl-space-2); padding: var(--vl-space-1) var(--vl-space-2) var(--vl-space-2); }
+  #app .court-select-copy { line-height: var(--vl-type-display-s-line-height); }
+  #app .court-select-copy strong { margin: 0; font-size: var(--vl-type-display-s-size); }
+  #app .court-select-copy small { margin-top: 0; }
+  #app .court-select-weapon { margin-top: var(--vl-space-1); }
+  #app #modal.courtyard-growth .modal-head h1 { font-size: var(--vl-type-display-l-size); }
+  #app .court-reward-title .n1-inline-count { display: none; }
+  #app .courtyard-result .court-result-heading .court-card-inner { padding: var(--vl-space-2) 0; }
+  #app .court-result-cat { height: 18vh; min-height: 86px; margin-top: var(--vl-space-1); margin-bottom: var(--vl-space-2); }
+  #app .court-result-summary .court-card-inner { padding: var(--vl-space-2) var(--vl-space-3); }
+  #app .court-result-actions > .court-button { font-size: var(--vl-type-display-s-size); }
+}
+@media (max-width: 340px) {
+  #app .r1-home-title { font-size: var(--vl-type-display-xl-size); }
+  #app .court-result-heading h1 { font-size: var(--vl-type-display-xl-size); }
+  #app .r1-home-title::before, #app .r1-home-title::after,
+  #app .r1-level-caption::before, #app .r1-level-caption::after,
+  #app .run-objective::before, #app .run-objective::after,
+  #app .r1-start::before, #app .r1-start::after { display: none; }
+  #app .court-reward-title strong { font-size: var(--vl-type-display-s-size); }
+}
+@media (max-width: 340px) and (max-height: 700px) {
+  #app .court-result-cat { height: 15vh; }
+}
+
+/* Reduced motion affects UI decoration, with state changes still available. */
+#app.low-quality { --ui-selection-transform: none; --ui-selection-duration: 0ms; }
+#app.low-quality .court-reward-spark { display: none; }
+#app.low-quality .court-reward-card.is-entering,
+#app.low-quality .court-reward-card.is-picking .court-card-inner,
+#app.low-quality .btn, #app.low-quality .r1-home button {
+  animation: none;
+  transition: none;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #app { --ui-selection-transform: none; --ui-selection-duration: 0ms; }
+  #app .court-reward-spark { display: none; }
+  #app .court-reward-card.is-entering,
+  #app .court-reward-card.is-picking .court-card-inner,
+  #app .btn, #app .r1-home button {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}

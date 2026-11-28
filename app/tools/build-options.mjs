@@ -7,7 +7,7 @@ import {loadRuntimeVendors} from './audio-vendors.mjs';
 const sha = value => createHash('sha256').update(value).digest('hex');
 
 // Shared by production and standalone fixtures; creating options writes no files.
-export async function createBuildOptions(config, {testInputDiagnostics = false} = {}) {
+export async function createBuildOptions(config, {testInputDiagnostics = false,devtools = false} = {}) {
 const audioVendors=config.profile==='playtest'?await loadRuntimeVendors():null;
 // Record the versions actually loaded for this build; package.json and its lockfile own the pins.
 const versions = { phaser: JSON.parse(readFileSync('node_modules/phaser/package.json', 'utf8')).version, typescript: ts.version, esbuild: esbuildVersion };
@@ -42,7 +42,7 @@ function changeBodies(source, targets, remove = false) {
 }
 const license = readFileSync('node_modules/phaser/LICENSE.md', 'utf8') + '\n\nEmbedded eventemitter3:\n' + readFileSync('node_modules/eventemitter3/LICENSE', 'utf8')+(audioVendors?'\n\nZzFX / ZzFXM:\n'+audioVendors.licenses.join('\n\n'):'');
 const buildOptions = {
-  entryPoints: ['src/main.ts'], bundle: true, format: 'iife', platform: 'browser', target: ['es2017', 'chrome61'], define:{__BUILD_PROFILE__:JSON.stringify(config.profile),__COURTYARD_ENABLED__:JSON.stringify(config.courtyardEnabled),__COMBAT_SLICE_ENABLED__:JSON.stringify(config.combatSliceEnabled),__TEST_INPUT_DIAGNOSTICS__:JSON.stringify(testInputDiagnostics === true)}, minify: true, sourcemap: false, legalComments: 'none', metafile: true, outfile: config.dist+'/assets/main.js',
+  entryPoints: ['src/main.ts'], bundle: true, format: 'iife', platform: 'browser', target: ['es2017', 'chrome61'], define:{__BUILD_PROFILE__:JSON.stringify(config.profile),__COURTYARD_ENABLED__:JSON.stringify(config.courtyardEnabled),__COMBAT_SLICE_ENABLED__:JSON.stringify(config.combatSliceEnabled),__TEST_INPUT_DIAGNOSTICS__:JSON.stringify(testInputDiagnostics === true),__DEVTOOLS__:JSON.stringify(devtools === true)}, minify: true, sourcemap: false, legalComments: 'none', metafile: true, outfile: config.dist+'/assets/main.js',
   banner: { js: '/*! Phaser ' + versions.phaser + ' license\n' + license.replace(/\*\//g, '* /') + '\n*/' },
   plugins: [...(audioVendors?[audioVendors.plugin]:[]),{ name: 'phaser-canvas-minitool', setup(builder) {
     builder.onLoad({ filter: /[\\/]phaser[\\/]src[\\/].*\.js$/ }, args => {

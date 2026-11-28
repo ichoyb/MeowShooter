@@ -9,7 +9,7 @@ import path from 'node:path';
 const out=path.resolve(process.env.G4D_ADMISSION_DIR||'../.local/checks/g4d-normal-pool-20261104/admission');
 mkdirSync(out,{recursive:true});
 const file=path.join(out,'admission-rules.mjs');
-await build({stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES,GROWTH_NUMBERS} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
+await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES,GROWTH_NUMBERS} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
 const R=await import(pathToFileURL(file));
 const {normalCourtyardRunConfig,makeRunConfig,SPAWN_STAGES,SliceSpawns,ArrivalReinforcements,COURTYARD_LEVEL,dropExperience,experienceNeeded,RunGrowth,growthCards,growthCard,GROWTH_CORES,growthCardEligible,growthRoutes,growthCombinations,deriveGrowthConfig,projectileCapacityForGrowth}=R;
 const oldDir=path.resolve('../.local/checks/g4c-normal-pool-20261104/admission'),oldReportFile=path.join(oldDir,'rules-report.json'),oldBundle=path.join(oldDir,'admission-rules.mjs');

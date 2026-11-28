@@ -1,6 +1,6 @@
 {
   "name": "cat-save-world-minitool-demo",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
     "audit": "node tools/audit.mjs",
     "package": "node tools/package.mjs",
     "preview": "node tools/serve.mjs",
+    "play": "node devtools/play.mjs",
     "precheck": "node tools/prepare-ui.cjs",
     "prebuild": "node tools/prepare-ui.cjs",
     "build:review": "node tools/build-review.mjs",

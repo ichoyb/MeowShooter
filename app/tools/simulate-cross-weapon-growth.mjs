@@ -7,7 +7,7 @@ import {pathToFileURL} from 'node:url';
 const out=path.resolve(process.env.GROWTH_SIMULATION_DIR||'../.local/checks/cross-weapon-growth-20261027');
 mkdirSync(out,{recursive:true});
 const moduleFile=path.join(out,'simulation-rules.mjs');
-await build({stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:moduleFile});
+await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:moduleFile});
 const {RunGrowth,makeRunConfig,courtyardRunConfig,growthCardEligible,GROWTH_CARDS,GROWTH_CORES}=await import(pathToFileURL(moduleFile));
 const seeds=1000,ratios=[.5,.7,.9,1],pairs=[['CAT01','W01'],['CAT02','W04'],['CAT03','W02']];
 const routes=[

@@ -4,7 +4,7 @@ import {copyFileSync,mkdirSync,writeFileSync,readdirSync} from 'node:fs';
 import path from 'node:path';
 const out=path.resolve(process.env.R2_SESSION_SAMPLE_DIR||'../.local/checks/r2-pause-result/sample');
 mkdirSync(path.join(out,'assets/ui'),{recursive:true});
-await build({entryPoints:['tests/fixtures/r2-session-ui.ts'],bundle:true,format:'iife',platform:'browser',target:['es2017','chrome61'],minify:true,outfile:path.join(out,'assets/main.js')});
+await build({define:{__DEVTOOLS__:'false'},entryPoints:['tests/fixtures/r2-session-ui.ts'],bundle:true,format:'iife',platform:'browser',target:['es2017','chrome61'],minify:true,outfile:path.join(out,'assets/main.js')});
 copyFileSync('style.css',path.join(out,'assets/style.css'));
 for(const name of readdirSync('assets/ui').filter(n=>n.endsWith('.svg')))copyFileSync('assets/ui/'+name,path.join(out,'assets/ui',name));
 for(const id of ['CAT01','CAT02','CAT03'])copyFileSync('assets/r1-restoration/ui-'+id+'.png',path.join(out,'assets/ui/'+id+'.png'));

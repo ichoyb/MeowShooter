@@ -61,7 +61,7 @@ with zipfile.ZipFile(artifact) as archive:
         entry['compressedBytes'] = archive.getinfo(entry['file']).compress_size
 data = artifact.read_bytes()
 if len(data) > archive_max: errors.append(f'ZIP above project archive budget: {len(data)} > {archive_max} bytes')
-source_files = sorted((p for folder in ('src', 'assets', 'tools', 'tests') for p in pathlib.Path(folder).rglob('*') if p.is_file()), key=portable_order)
+source_files = sorted((p for folder in ('src', 'assets', 'tools', 'tests', 'devtools') for p in pathlib.Path(folder).rglob('*') if p.is_file()), key=portable_order)
 source_files += [pathlib.Path(f) for f in ('index.html', 'style.css', 'package.json', 'package-lock.json', 'tsconfig.json', 'runtime-config.json', 'asset-budget.json', 'ASSET_SOURCES.json')]
 source_records = [{'file': p.as_posix(), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in source_files]
 source_records.sort(key=lambda entry: entry['file'].lower())

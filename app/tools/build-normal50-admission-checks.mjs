@@ -10,7 +10,7 @@ const out=path.resolve(process.env.NORMAL50_SCENE_DIR||'../.local/checks/normal5
 if(!out.endsWith(path.normalize('normal50-admission-20261105/scene')))throw Error('Use this run-specific scene output only');
 mkdirSync(out,{recursive:true});
 const rulesFile=path.join(out,'normal50-rules.mjs');
-await build({stdin:{contents:"export * from './src/progression'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:rulesFile});
+await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:rulesFile});
 const R=await import(pathToFileURL(rulesFile)),zero={L1_DAMAGE:0,L1_RATE:0,L1_HEART:0};
 const sum=r=>Object.values(r).reduce((a,b)=>a+b,0),baseFor=cat=>R.normalCourtyardRunConfig(R.makeRunConfig(cat,cat==='CAT01'?'W01':cat==='CAT02'?'W04':'W02','p2-basic'));
 const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let x=Math.imul(seed^seed>>>15,1|seed);x=x+Math.imul(x^x>>>7,61|x)^x;return ((x^x>>>14)>>>0)/4294967296;};
@@ -76,7 +76,7 @@ for(const c of scenarios){c.legalRankPaths=[];for(const ranks of [c.before,c.aft
 const sha=f=>createHash('sha256').update(readFileSync(f)).digest('hex');
 writeFileSync(path.join(out,'scene-inputs.json'),JSON.stringify({status:'PASS',scope:'CONTROLLED_QA_NOT_RELEASE',witnesses,samePoolProofs,capacityInvariance,scenarios,priorCapacity:{file:capacityFile,sha256:sha(capacityFile)},rulesSHA256:sha(rulesFile)},null,2)+'\n');
 const {buildOptions}=await import('./build.mjs'),dist=path.join(out,'scene-dist');mkdirSync(dist,{recursive:true});cpSync(path.dirname(path.dirname(buildOptions.outfile)),dist,{recursive:true});
-await build({...buildOptions,entryPoints:['tests/fixtures/normal50-admission-checks.ts'],outfile:path.join(dist,'assets/normal50-admission-checks.js')});
+await build({define:{__DEVTOOLS__:'false'},...buildOptions,entryPoints:['tests/fixtures/normal50-admission-checks.ts'],outfile:path.join(dist,'assets/normal50-admission-checks.js')});
 writeFileSync(path.join(dist,'normal50-admission-checks.html'),'<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><link rel="stylesheet" href="./assets/style.css"><script defer src="./assets/normal50-admission-checks.js"></script></head><body style="margin:0"><div id="stage" style="position:relative;width:390px;height:844px"></div><div id="cardProbe"></div></body></html>');
 const inputs=['tests/fixtures/normal50-admission-checks.ts','tools/build-normal50-admission-checks.mjs','src/battle.ts','src/progression.ts','src/progression-content.ts','src/level-config.ts','src/rules.ts','src/progression-capacity.ts','src/contract-rules.ts','src/sustain-rules.ts','src/sentinel-abilities.ts','src/experience-pickups.ts'];
 writeFileSync(path.join(out,'scene-build.json'),JSON.stringify({atUTC:new Date().toISOString(),scope:'P4_NORMAL50_CONTROLLED_ACTUAL_ARENA_NOT_RELEASE',dist,node:process.version,mainSHA256:sha(path.join(dist,'assets/main.js')),checksSHA256:sha(path.join(dist,'assets/normal50-admission-checks.js')),sourceHashes:Object.fromEntries(inputs.map(f=>[f,sha(f)])),witnesses:witnesses.map(w=>({cat:w.cat,pair:w.pair,seed:w.seed,picks:w.picks.length})),scenarios:scenarios.length},null,2)+'\n');

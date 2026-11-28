@@ -19,7 +19,7 @@ const rows = [...catalog.matchAll(/^\| ([A-Z]\d+) \/ \x60([^\x60]+)\x60 \| (.+?)
 const byId = new Map(rows.map(([, design, id, name, condition]) => [id, {design, name, condition}]));
 assert.equal(byId.size, rows.length, 'Duplicate design mapping');
 assert.equal(new Set(rows.map(([, design]) => design)).size, rows.length, 'Duplicate design identity');
-const {outputFiles:[bundle]} = await build({absWorkingDir:app,entryPoints:['tools/courtyard-balance-data.ts'],
+const {outputFiles:[bundle]} = await build({define:{__DEVTOOLS__:'false'},absWorkingDir:app,entryPoints:['tools/courtyard-balance-data.ts'],
  bundle:true,platform:'node',target:'node22',format:'esm',write:false});
 const fingerprint = createHash('sha256').update(bundle.contents).update(catalog)
  .update(JSON.stringify([runtime.playtest,labels.cats.map(c=>c.id),labels.weapons.map(w=>[w.id,w.name])])).digest('hex');

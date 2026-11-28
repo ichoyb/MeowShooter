@@ -1,7 +1,7 @@
 import type {RunConfig} from './combat-config';
 import type {GrowthRanks} from './progression-content';
 export type ContractId='R04'|'R05'|'R06'|'R07';
-export type MovementContext=Readonly<{moving:boolean;stationarySeconds:number}>;
+export type MovementContext=Readonly<{moving:boolean;stationarySeconds:number;devtoolsDamage?:number}>;
 export const MOVEMENT_CONTRACT_NUMBERS=Object.freeze({movingBenefit:1.25,cost:.8,stationaryBenefit:1.4,chargeSeconds:1,minimumDistance:1e-4});
 export function stanceMultiplier(base:RunConfig,ranks:GrowthRanks,context:MovementContext={moving:false,stationarySeconds:0}):number {
  if(!base.movementContracts?.enabled)return 1;

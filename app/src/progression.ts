@@ -1,3 +1,5 @@
+// Code guarded by __DEVTOOLS__ serves the local developer tools only; official builds compile it out.
+declare const __DEVTOOLS__:boolean;
 import type {RunConfig,GrowthTuning} from './combat-config';
 import {GROWTH_CARDS,GROWTH_ROUTES,GROWTH_COMBINATIONS,ABILITY_SUPPORTS,GROWTH_CORES,GROWTH_NUMBERS as N,growthNumbers,GROWTH_RULES_VERSION,CONTROLLED_GROWTH_RULES_VERSION,SUSTAIN_GROWTH_RULES_VERSION,CONTRACT_GROWTH_RULES_VERSION,ORDINARY_XP,growthCards,growthCard,type GrowthId,type GrowthRanks} from './progression-content';
 import {contractMultipliers,contractEligible,stanceMultiplier,CONTRACT_NUMBERS,type MovementContext} from './contract-rules';
@@ -94,13 +96,23 @@ export function deriveGrowthConfig(base:RunConfig,ranks:GrowthRanks,context?:Mov
   intervalSeconds:base.weapon.intervalSeconds/(1+attributes.rate*ranks.L1_RATE)})});
 }
 export class RunGrowth{
+ declare devtoolsGrant?:(id:GrowthId,commit:(ranks:GrowthRanks,source:GrowthOffer['source'])=>number|false)=>boolean;
  private level=1;private xp=0;private totalXP=0;private pending=0;private sequence=0;private confirmedPicks=0;
  private ranks:GrowthRanks={L1_DAMAGE:0,L1_RATE:0,L1_HEART:0};
  private recentDeclined:GrowthId[][]=[];
  private offer:GrowthOffer|null=null;private evolutionViews:Partial<Record<GrowthId,number>>={};
  private eliteQueue:{encounterId:string;birthId:number}[]=[];private eliteSeen=new Set<string>();private eliteBirths=new Set<number>();
  private eliteRewards:{offerId:number;encounterId:string;birthId:number;cardId:GrowthId;recovered:number}[]=[];
- constructor(readonly runId:number,private random:()=>number,private base?:RunConfig){}
+ constructor(readonly runId:number,private random:()=>number,private base?:RunConfig){
+  if(__DEVTOOLS__)this.devtoolsGrant=(id,commit)=>!this.offer&&this.commitReward(id,'experience',commit)!==false;
+ }
+ private commitReward(id:GrowthId,source:GrowthOffer['source'],commit?:(ranks:GrowthRanks,source:GrowthOffer['source'])=>number|false):number|false {
+  if(!growthCardEligible(id,this.ranks,this.base,this.confirmedPicks))return false;
+  const next={...this.ranks,[id]:growthRank(this.ranks,id)+1};
+  const recovered=commit?commit(next,source):0;if(recovered===false)return false;
+  this.ranks=next;this.confirmedPicks++;
+  return recovered;
+ }
  queueElite(encounterId:string,birthId:number):boolean {
   if(!encounterId||!Number.isInteger(birthId)||birthId<1||this.eliteSeen.has(encounterId)||this.eliteBirths.has(birthId))return false;
   this.eliteSeen.add(encounterId);this.eliteBirths.add(birthId);this.eliteQueue.push({encounterId,birthId});
@@ -149,12 +161,10 @@ export class RunGrowth{
  }
  confirm(runId:number,offerId:number,id:string,commit?:(ranks:GrowthRanks,source:GrowthOffer['source'])=>number|false):boolean{
   const card=growthCards(this.base).find(c=>c.id===id);
-  if(runId!==this.runId||!this.offer||this.offer.id!==offerId||!card||!this.offer.choices.includes(card.id)||
-   !growthCardEligible(card.id,this.ranks,this.base,this.confirmedPicks))return false;
-  const next={...this.ranks,[card.id]:growthRank(this.ranks,card.id)+1},source=this.offer.source??'experience';
-  const recovered=commit?commit(next,source):0;if(recovered===false)return false;
+  if(runId!==this.runId||!this.offer||this.offer.id!==offerId||!card||!this.offer.choices.includes(card.id))return false;
+  const source=this.offer.source??'experience';
+  const recovered=this.commitReward(card.id,source,commit);if(recovered===false)return false;
   this.recentDeclined.push(this.offer.choices.filter(id=>id!==card.id));if(this.recentDeclined.length>2)this.recentDeclined.shift();
-  this.ranks=next;this.confirmedPicks++;
   if(source==='elite'){
    const index=this.eliteQueue.findIndex(e=>e.encounterId===this.offer!.encounterId&&e.birthId===this.offer!.birthId);
    if(index>=0)this.eliteQueue.splice(index,1);

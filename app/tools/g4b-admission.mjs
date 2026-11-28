@@ -9,7 +9,7 @@ import path from 'node:path';
 const out=path.resolve(process.env.G4B_ADMISSION_DIR||'../.local/checks/g4b-normal-pool-20261104/admission');
 mkdirSync(out,{recursive:true});
 const file=path.join(out,'admission-rules.mjs');
-await build({stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
+await build({define:{__DEVTOOLS__:'false'},stdin:{contents:"export * from './src/progression'; export {GROWTH_CORES} from './src/progression-content'; export * from './src/combat-config'; export * from './src/level-config'; export * from './src/progression-capacity';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',target:'node22',outfile:file});
 const R=await import(pathToFileURL(file));
 const {normalCourtyardRunConfig,makeRunConfig,SPAWN_STAGES,SliceSpawns,ArrivalReinforcements,COURTYARD_LEVEL,dropExperience,experienceNeeded,RunGrowth,GROWTH_CARDS,GROWTH_CORES,growthCardEligible,growthCombinations,growthRoutes,deriveGrowthConfig,projectileCapacityForGrowth,GROWTH_NUMBERS:N}=R;
 const pairs=[['CAT01','W01'],['CAT02','W04'],['CAT03','W02']],zero={L1_DAMAGE:0,L1_RATE:0,L1_HEART:0};

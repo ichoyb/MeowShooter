@@ -13,9 +13,10 @@ entries.push('contracts');
 entries.push('stances');
 entries.push('normal50-growth-pool','opening','onboarding','chapter','chapter-motion','reward-receipt');
 // Preserve forbidden Phaser import edges without parsing browser-only engine dependencies.
-const { metafile } = await build({ entryPoints: entries.map(name=>'tests/'+name+'.test.ts'), bundle: true, platform: 'node', format: 'esm', target: 'node22', outdir: '.test-build',outExtension:{'.js':'.mjs'}, metafile: true, external: ['phaser','phaser/*'] });
-for (const name of ['onboarding','opening','normal50-growth-pool','stances','contracts','sustain-rewards','fortress-fusion','sentinel','player-defense','area-abilities','experience-pickups','weapon-bursts','projectile-traits','projectile-flight','hunt-targeting','hunt-growth','hot-start','return-upgrades','normal-growth-pool','bell-abilities','bell-modifiers','progression','progression-capacity','three-builds','combat-config','rules','cat-passives','battle-geometry','arena-layout','image-budget','level-config','enemy-behavior','elite-boss']) {
-  const entry = 'tests/'+name+'.test.ts';
+const { metafile } = await build({ entryPoints: entries.map(name=>'tests/'+name+'.test.ts'), bundle: true, platform: 'node', format: 'esm', target: 'node22', define:{__DEVTOOLS__:'false'}, outdir: '.test-build',outExtension:{'.js':'.mjs'}, metafile: true, external: ['phaser','phaser/*'] });
+const devtoolsBuild=await build({entryPoints:['devtools/tests/rules.test.ts'],bundle:true,platform:'node',format:'esm',target:'node22',outfile:'.test-build/devtools.test.mjs',define:{__DEVTOOLS__:'true'},metafile:true,external:['phaser','phaser/*']});
+Object.assign(metafile.inputs,devtoolsBuild.metafile.inputs);
+for (const entry of ['devtools/tests/rules.test.ts',...[ 'onboarding','opening','normal50-growth-pool','stances','contracts','sustain-rewards','fortress-fusion','sentinel','player-defense','area-abilities','experience-pickups','weapon-bursts','projectile-traits','projectile-flight','hunt-targeting','hunt-growth','hot-start','return-upgrades','normal-growth-pool','bell-abilities','bell-modifiers','progression','progression-capacity','three-builds','combat-config','rules','cat-passives','battle-geometry','arena-layout','image-budget','level-config','enemy-behavior','elite-boss'].map(name=>'tests/'+name+'.test.ts')]) {
   const pending = [{ path: entry, chain: [entry] }];
   const visited = new Set();
   while (pending.length) {
@@ -45,5 +46,5 @@ const nativeTests = [
   'onboarding-clock.test.cjs',
   'g6-normal-cli.test.cjs','n1-reward-audio.test.mjs','n1-story-audio.test.mjs','n1-story-pcm.test.mjs',
 ];
-const result = spawnSync(process.execPath, ['--test', ...entries.map(name=>'.test-build/'+name+'.test.mjs'), ...nativeTests.map(name=>'tests/'+name)], { stdio: 'inherit', windowsHide: true });
+const result = spawnSync(process.execPath, ['--test', 'devtools/tests/build.test.mjs', '.test-build/devtools.test.mjs', ...entries.map(name=>'.test-build/'+name+'.test.mjs'), ...nativeTests.map(name=>'tests/'+name)], { stdio: 'inherit', windowsHide: true });
 process.exitCode = result.status ?? 1;
